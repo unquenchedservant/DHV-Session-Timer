@@ -1,41 +1,72 @@
-import time
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtCore import QTimer, Qt
 from playsound import playsound
 
-#keeping this for later, for adjustability
-def play_sound_after_delay(sound_file, delay):
-    time.sleep(delay)
-    playsound(sound_file)
+class TimerApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.sound = "asset/ding.mp3"
+        self.initUI()
+        
+    def initUI(self):
+        self.setWindowTitle('Timer App')
+        
+        self.timer_label = QLabel('0:00', self)
+        self.timer_label.setAlignment(Qt.AlignCenter)
+        
+        self.start_button = QPushButton('Start', self)
+        self.start_button.clicked.connect(self.start_timer)
+        
+        self.stop_button = QPushButton('Stop', self)
+        self.stop_button.clicked.connect(self.stop_timer)
+        
+        self.reset_button = QPushButton('Reset', self)
+        self.reset_button.clicked.connect(self.reset_timer)
+        
+        layout = QVBoxLayout()
+        layout.addWidget(self.timer_label)
+        layout.addWidget(self.start_button)
+        layout.addWidget(self.stop_button)
+        layout.addWidget(self.reset_button)
+        
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+        
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_timer)
+        
+        self.elapsed_time = 0
+        
+    def start_timer(self):
+        self.timer.start(1000)
+        
+    def stop_timer(self):
+        self.timer.stop()
+        
+    def reset_timer(self):
+        self.timer.stop()
+        self.elapsed_time = 0
+        self.timer_label.setText('0:00')
+        
+    def update_timer(self):
+        self.elapsed_time += 1
+        minutes = self.elapsed_time // 60
+        seconds = self.elapsed_time % 60
+        self.timer_label.setText(f'{minutes}:{seconds:02}')
+        
+        if self.elapsed_time == 6 * 60:
+            playsound(self.sound)
+        elif self.elapsed_time == 8 * 60:
+            playsound(self.sound)
+        elif self.elapsed_time == 10 * 60:
+            playsound(self.sound)
+            self.timer_label.setText('Session Done!')
+            self.timer.stop()
 
-#default is 10 minutes, with a temp change at 6 minutes and
-# another at 8 minutes
-
-# plan is to have the timer be a little bit more...flowy.
-# Will probably make PyQT timer for this later to allow
-# for a settings page
-if __name__ == "__main__":
-    sound_file = 'asset/ding.mp3'
-    time.sleep(60)
-    print("1 minute has passed")
-    time.sleep(60)
-    print("2 minutes have passed")
-    time.sleep(60)
-    print("3 minutes have passed")
-    time.sleep(60)
-    print("4 minutes have passed")
-    time.sleep(60)
-    print("5 minutes have passed")
-    time.sleep(60)
-    print("6 minutes have passed")
-    print("Temp set to 375")
-    playsound(sound_file)
-    time.sleep(60)
-    print("7 minutes have passed")
-    time.sleep(60)
-    print("8 minutes have passed")
-    print("Temp set to 400")
-    playsound(sound_file)
-    time.sleep(60)
-    print("9 minutes have passed")
-    time.sleep(60)
-    print("End session! Enjoy!")
-    playsound(sound_file)
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = TimerApp()
+    ex.show()
+    sys.exit(app.exec_())
