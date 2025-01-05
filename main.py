@@ -1,8 +1,25 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt
 from playsound import playsound
 
+class SettingsWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+        self.setWindowTitle('Settings')
+        self.setGeometry(100, 100, 200, 100)
+        
+        layout = QVBoxLayout()
+        
+        # Add settings widgets here
+        # Example: QLabel
+        label = QLabel('Settings go here', self)
+        layout.addWidget(label)
+        
+        self.setLayout(layout)
 class TimerApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -28,15 +45,21 @@ class TimerApp(QMainWindow):
         
         self.reset_button = QPushButton('Reset', self)
         self.reset_button.clicked.connect(self.reset_timer)
+
+        self.settings_button = QPushButton('Settings', self)
+        self.settings_button.clicked.connect(self.open_settings)
         
         layout = QVBoxLayout()
         start_stop_layout = QHBoxLayout()
         start_stop_layout.addWidget(self.start_button)
         start_stop_layout.addWidget(self.stop_button)
+        reset_settings_layout = QHBoxLayout()
+        reset_settings_layout.addWidget(self.reset_button)
+        reset_settings_layout.addWidget(self.settings_button)
         layout.addWidget(self.timer_label)
         layout.addWidget(self.temp_label)
         layout.addLayout(start_stop_layout)
-        layout.addWidget(self.reset_button)
+        layout.addLayout(reset_settings_layout)
         
         container = QWidget()
         container.setLayout(layout)
@@ -57,7 +80,11 @@ class TimerApp(QMainWindow):
         self.timer.stop()
         self.elapsed_time = 0
         self.timer_label.setText('0:00')
-        
+
+    def open_settings(self):
+        self.settings_window = SettingsWindow()
+        self.settings_window.exec_()
+       
     def update_timer(self):
         self.elapsed_time += 1
         minutes = self.elapsed_time // 60
