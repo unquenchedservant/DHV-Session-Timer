@@ -14,6 +14,8 @@ class TimerApp(QMainWindow):
         
         self.timer_label = QLabel('0:00', self)
         self.timer_label.setAlignment(Qt.AlignCenter)
+        self.temp_label = QLabel('Temp: 350', self)
+        self.temp_label.setAlignment(Qt.AlignCenter)
         
         self.start_button = QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_timer)
@@ -60,10 +62,13 @@ class TimerApp(QMainWindow):
         self.timer_label.setText(f'{minutes}:{seconds:02}')
         
         if self.elapsed_time == 6 * 60:
+            self.temp_label.setText('Temp: 375')
             playsound(self.sound)
         elif self.elapsed_time == 8 * 60:
+            self.temp_label.setText('Temp: 400')
             playsound(self.sound)
         elif self.elapsed_time == 10 * 60:
+            self.temp_label.hide()
             playsound(self.sound)
             self.timer_label.setText('Session Done!')
             self.timer.stop()
