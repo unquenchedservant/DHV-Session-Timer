@@ -14,8 +14,11 @@ class TimerApp(QMainWindow):
         
         self.timer_label = QLabel('0:00', self)
         self.timer_label.setAlignment(Qt.AlignCenter)
+        self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
+        
         self.temp_label = QLabel('Temp: 350', self)
         self.temp_label.setAlignment(Qt.AlignCenter)
+        self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
         
         self.start_button = QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_timer)
