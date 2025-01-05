@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt
 from playsound import playsound
 
@@ -25,9 +25,12 @@ class TimerApp(QMainWindow):
         self.reset_button.clicked.connect(self.reset_timer)
         
         layout = QVBoxLayout()
+        start_stop_layout = QHBoxLayout()
+        start_stop_layout.addWidget(self.start_button)
+        start_stop_layout.addWidget(self.stop_button)
         layout.addWidget(self.timer_label)
-        layout.addWidget(self.start_button)
-        layout.addWidget(self.stop_button)
+        layout.addWidget(self.temp_label)
+        layout.addLayout(start_stop_layout)
         layout.addWidget(self.reset_button)
         
         container = QWidget()
