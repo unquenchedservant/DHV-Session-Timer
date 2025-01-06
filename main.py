@@ -124,7 +124,7 @@ class SettingsWindow(QDialog):
         the following could be used to save the values automatically on reset
         but I found that it does some weird things if you close the settings window
         instead of saving after a reset, so i'm just going to leave it out for now
-        
+
         self.settings.setValue('temp1', '350')
         self.settings.setValue('temp2', '375')
         self.settings.setValue('temp3', '400')
@@ -246,7 +246,7 @@ class TimerApp(QMainWindow):
         self.elapsed_time = 0
         self.timer_label.setText('0:00')
         self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
-        self.temp_label.setText('Temp: 350')
+        self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}")
         self.temp_label.show()
 
     def open_settings(self):
