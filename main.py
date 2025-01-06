@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QSh
 from PyQt5.QtCore import QTimer, Qt, QSettings
 from PyQt5.QtGui import QKeySequence, QIntValidator
 from playsound import playsound
+import math
 
 class SettingsWindow(QDialog):
     def __init__(self, settings):
@@ -38,6 +39,14 @@ class SettingsWindow(QDialog):
         self.temp3_input.setText(self.settings.value('temp3', '400'))
         self.temp3_input.setFixedWidth(40)
         temp_layout.addRow('Temp 3:', self.temp3_input)
+
+        self.temp_unit = QComboBox(self)
+        self.temp_unit.addItems(['F', 'C'])
+        self.temp_unit.setCurrentText(self.settings.value('temp_type', 'F'))
+        self.temp_unit.currentIndexChanged.connect(self.temp_unit_change)
+        self.temp_unit.setFixedWidth(40)
+        temp_layout.addRow('Temp Unit:', self.temp_unit)
+
         temp_widget = QWidget()
         temp_widget.setLayout(temp_layout)
         temp_widget.setFixedWidth(140)
@@ -86,7 +95,25 @@ class SettingsWindow(QDialog):
         layout.addWidget(save_button)
         
         self.setLayout(layout)
+
     
+
+    def temp_unit_change(self):
+        if self.temp_unit.currentText() == "F":
+            self.temp1_input.setText(str(self.c_to_f(int(self.temp1_input.text()))))
+            self.temp2_input.setText(str(self.c_to_f(int(self.temp2_input.text()))))
+            self.temp3_input.setText(str(self.c_to_f(int(self.temp3_input.text()))))
+        else:
+            self.temp1_input.setText(str(self.f_to_c(int(self.temp1_input.text()))))
+            self.temp2_input.setText(str(self.f_to_c(int(self.temp2_input.text()))))
+            self.temp3_input.setText(str(self.f_to_c(int(self.temp3_input.text()))))
+
+
+    def f_to_c(self, f_temp):
+        return math.floor((f_temp - 32) * 5/9)
+    
+    def c_to_f(self, c_temp):
+        return math.ceil(c_temp * 9/5 + 32)
     def save_settings(self):
         temp1 = int(self.temp1_input.text())
         temp2 = int(self.temp2_input.text())
@@ -99,12 +126,20 @@ class SettingsWindow(QDialog):
             self.error_msg.setText('Invalid time settings. Ensure each time is greater than the previous')
             self.error_msg.show()
             return
-        if not (122 <= temp1 <= 428 and 
-            122 <= temp2 <= 428 and 
-            122 <= temp3 <= 428):
-            self.error_msg.setText('Please enter valid temperatures (122-428°F)')
-            self.error_msg.show()
-            return
+        if unit == "F":
+            if not (122 <= temp1 <= 428 and 
+                122 <= temp2 <= 428 and 
+                122 <= temp3 <= 428):
+                self.error_msg.setText('Please enter valid temperatures (122-428°F)')
+                self.error_msg.show()
+                return
+        else:
+            if not (50 <= temp1 <= 220 and 
+                50 <= temp2 <= 220 and 
+                50 <= temp3 <= 220):
+                self.error_msg.setText('Please enter valid temperatures (50-220°C)')
+                self.error_msg.show()
+                return
         
         self.settings.setValue('temp1', str(temp1))
         self.settings.setValue('temp2', str(temp2))
@@ -112,6 +147,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time2', str(time2))
         self.settings.setValue('time3', str(time3))
         self.settings.setValue('time4', str(time4))
+        self.settings.setValue("temp_type", unit)
         self.accept()
     
 
@@ -130,7 +166,7 @@ class TimerApp(QMainWindow):
         self.timer_label.setAlignment(Qt.AlignCenter)
         self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
         
-        self.temp_label = QLabel('Temp: 350', self)
+        self.temp_label = QLabel(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}", self)
         self.temp_label.setAlignment(Qt.AlignCenter)
         self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
         
@@ -186,7 +222,7 @@ class TimerApp(QMainWindow):
     def open_settings(self):
         settings_window = SettingsWindow(self.settings)
         if settings_window.exec_():
-            self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}")
+            self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}")
        
     def update_timer(self):
         self.elapsed_time += 1
@@ -198,10 +234,10 @@ class TimerApp(QMainWindow):
         time4 = int(self.settings.value('time4', '10'))
         
         if self.elapsed_time == time2 * 60:
-            self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}')
+            self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}°{self.settings.value("temp_type", "F")}')
             playsound(self.sound)
         elif self.elapsed_time == time3 * 60:
-            self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}')
+            self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}°{self.settings.value("temp_type", "F")}')
             playsound(self.sound)
         elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
