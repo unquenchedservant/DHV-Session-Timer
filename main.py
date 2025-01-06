@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QLineEdit, QMainWindow, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QLineEdit, QMainWindow, QComboBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
 from PyQt5.QtGui import QIntValidator
 from playsound import playsound
@@ -12,49 +12,93 @@ class SettingsWindow(QDialog):
         
     def initUI(self):
         self.setWindowTitle('Settings')
-        self.setGeometry(100, 100, 300, 200)
+        self.setGeometry(100, 100, 600, 200)
         
-        layout = QFormLayout()
-        onlyInt = QIntValidator(122,428, self)
+        main_layout = QHBoxLayout()
+        
+        # Temperature settings
+        temp_layout = QFormLayout()
+        
+        self.temp1_input = QComboBox(self)
+        self.temp1_input.addItems([str(i) for i in range(122, 429)])
+        self.temp1_input.setCurrentText(self.settings.value('temp1', '350'))
+        temp_layout.addRow('Temp 1:', self.temp1_input)
+        
+        self.temp2_input = QComboBox(self)
+        self.temp2_input.addItems([str(i) for i in range(122, 429)])
+        self.temp2_input.setCurrentText(self.settings.value('temp2', '375'))
+        temp_layout.addRow('Temp 2:', self.temp2_input)
+        
+        self.temp3_input = QComboBox(self)
+        self.temp3_input.addItems([str(i) for i in range(122, 429)])
+        self.temp3_input.setCurrentText(self.settings.value('temp3', '400'))
+        temp_layout.addRow('Temp 3:', self.temp3_input)
+        
+        # Time settings
+        time_layout = QFormLayout()
+        
+        self.time1_input = QLabel("0",self)
+        time_layout.addRow('Time (min)', self.time1_input)
+        
+        self.time2_input = QComboBox(self)
+        self.time2_input.addItems([str(i) for i in range(1,25)])
+        self.time2_input.setCurrentText(self.settings.value('time2', '6'))
+        time_layout.addRow('Time (min):', self.time2_input)
+        
+        self.time3_input = QComboBox(self)
+        self.time3_input.addItems([str(i) for i in range(1,25)])
+        self.time3_input.setCurrentText(self.settings.value('time3', '8'))
+        time_layout.addRow('Time (min):', self.time3_input)
 
-        self.temp1_input = QLineEdit(self)
-        self.temp1_input.setValidator(onlyInt)
-        self.temp1_input.setText(self.settings.value('temp1', '350'))
-        layout.addRow('Temp 1:', self.temp1_input)
-        
-        self.temp2_input = QLineEdit(self)
-        self.temp2_input.setValidator(onlyInt)
-        self.temp2_input.setText(self.settings.value('temp2', '375'))
-        layout.addRow('Temp 2:', self.temp2_input)
-        
-        self.temp3_input = QLineEdit(self)
-        self.temp3_input.setValidator(onlyInt)
-        self.temp3_input.setText(self.settings.value('temp3', '400'))
-        layout.addRow('Temp 3:', self.temp3_input)
+        self.time4_input = QComboBox(self)
+        self.time4_input.addItems([str(i) for i in range(8,25)])
+        self.time4_input.setCurrentText(self.settings.value('time4', '10'))
+        time_layout.addRow('End Time (min):', self.time4_input)
+
+        # Add layouts to main layout
+        main_layout.addLayout(temp_layout)
+        main_layout.addLayout(time_layout)
+
+        save_button = QPushButton('Save', self)
+        save_button.clicked.connect(self.save_settings)
         
         self.error_msg = QLabel('Please enter valid temperatures (122-428°F)', self)
         self.error_msg.setStyleSheet("color: red")
-        layout.addWidget(self.error_msg)
         self.error_msg.hide()
-        
-        save_button = QPushButton('Save', self)
-        save_button.clicked.connect(self.save_settings)
+
+        layout = QVBoxLayout()
+        layout.addLayout(main_layout)
+        layout.addWidget(self.error_msg)
         layout.addWidget(save_button)
-        
         
         self.setLayout(layout)
     
     def save_settings(self):
-        if not (122 <= int(self.temp1_input.text()) <= 428 and 
-            122 <= int(self.temp2_input.text()) <= 428 and 
-            122 <= int(self.temp3_input.text()) <= 428):
+        temp1 = int(self.temp1_input.currentText())
+        temp2 = int(self.temp2_input.currentText())
+        temp3 = int(self.temp3_input.currentText())
+        time2 = int(self.time2_input.currentText())
+        time3 = int(self.time3_input.currentText())
+        time4 = int(self.time4_input.currentText())
+        if not time3 > time2 or not time4 > time3:
+            self.error_msg.setText('Invalid time settings. Ensure each time is greater than the previous')
+            self.error_msg.show()
+            return
+        if not (122 <= temp1 <= 428 and 
+            122 <= temp2 <= 428 and 
+            122 <= temp3 <= 428):
+            self.error_msg.setText('Please enter valid temperatures (122-428°F)')
             self.error_msg.show()
             return
         
-        self.settings.setValue('temp1', self.temp1_input.text())
-        self.settings.setValue('temp2', self.temp2_input.text())
-        self.settings.setValue('temp3', self.temp3_input.text())
+        self.settings.setValue('temp1', temp1)
+        self.settings.setValue('temp2', temp2)
+        self.settings.setValue('temp3', temp3)
+        self.settings.setValue('time2', time2)
+        self.settings.setValue('time3', time3)
+        self.settings.setValue('time4', time4)
         self.accept()
+    
 
 class TimerApp(QMainWindow):
     def __init__(self):
