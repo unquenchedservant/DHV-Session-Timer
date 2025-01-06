@@ -1,5 +1,8 @@
 # DHV Session Timer
-A quick QT based timer
+A quick QT based timer, with a ding at adjustable intervals. Useful for reminding yourself to 
+adjust the temperature on your Dry Herb Vape session.
+
+This is built using the Solo 3 in mind, and so time and temperature limits are because of that. 
 
 ## Installation
 Should work on most versions of Python 3, but was built with Python 3.13
