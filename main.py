@@ -1,28 +1,65 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtWidgets import QApplication, QLineEdit, QMainWindow, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtCore import QTimer, Qt, QSettings
+from PyQt5.QtGui import QIntValidator
 from playsound import playsound
 
 class SettingsWindow(QDialog):
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
+        self.settings = settings
         self.initUI()
         
     def initUI(self):
         self.setWindowTitle('Settings')
-        self.setGeometry(100, 100, 200, 100)
+        self.setGeometry(100, 100, 300, 200)
         
-        layout = QVBoxLayout()
+        layout = QFormLayout()
+        onlyInt = QIntValidator(122,428, self)
+
+        self.temp1_input = QLineEdit(self)
+        self.temp1_input.setValidator(onlyInt)
+        self.temp1_input.setText(self.settings.value('temp1', '350'))
+        layout.addRow('Temp 1:', self.temp1_input)
         
-        # Add settings widgets here
-        # Example: QLabel
-        label = QLabel('Settings go here', self)
-        layout.addWidget(label)
+        self.temp2_input = QLineEdit(self)
+        self.temp2_input.setValidator(onlyInt)
+        self.temp2_input.setText(self.settings.value('temp2', '375'))
+        layout.addRow('Temp 2:', self.temp2_input)
+        
+        self.temp3_input = QLineEdit(self)
+        self.temp3_input.setValidator(onlyInt)
+        self.temp3_input.setText(self.settings.value('temp3', '400'))
+        layout.addRow('Temp 3:', self.temp3_input)
+        
+        self.error_msg = QLabel('Please enter valid temperatures (122-428°F)', self)
+        self.error_msg.setStyleSheet("color: red")
+        layout.addWidget(self.error_msg)
+        self.error_msg.hide()
+        
+        save_button = QPushButton('Save', self)
+        save_button.clicked.connect(self.save_settings)
+        layout.addWidget(save_button)
+        
         
         self.setLayout(layout)
+    
+    def save_settings(self):
+        if not (122 <= int(self.temp1_input.text()) <= 428 and 
+            122 <= int(self.temp2_input.text()) <= 428 and 
+            122 <= int(self.temp3_input.text()) <= 428):
+            self.error_msg.show()
+            return
+        
+        self.settings.setValue('temp1', self.temp1_input.text())
+        self.settings.setValue('temp2', self.temp2_input.text())
+        self.settings.setValue('temp3', self.temp3_input.text())
+        self.accept()
+
 class TimerApp(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer')
         self.sound = "asset/ding.mp3"
         self.initUI()
         
@@ -86,8 +123,9 @@ class TimerApp(QMainWindow):
         self.temp_label.show()
 
     def open_settings(self):
-        self.settings_window = SettingsWindow()
-        self.settings_window.exec_()
+        settings_window = SettingsWindow(self.settings)
+        if settings_window.exec_():
+            self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}")
        
     def update_timer(self):
         self.elapsed_time += 1
@@ -96,10 +134,10 @@ class TimerApp(QMainWindow):
         self.timer_label.setText(f'{minutes}:{seconds:02}')
         
         if self.elapsed_time == 6 * 60:
-            self.temp_label.setText('Temp: 375')
+            self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}')
             playsound(self.sound)
         elif self.elapsed_time == 8 * 60:
-            self.temp_label.setText('Temp: 400')
+            self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}')
             playsound(self.sound)
         elif self.elapsed_time == 10*60:
             self.temp_label.hide()
@@ -109,6 +147,7 @@ class TimerApp(QMainWindow):
             self.timer.stop()
 
 if __name__ == '__main__':
+    
     app = QApplication(sys.argv)
     ex = TimerApp()
     ex.show()
