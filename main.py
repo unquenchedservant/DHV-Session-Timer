@@ -4,6 +4,7 @@ from PyQt5.QtCore import QTimer, Qt, QSettings
 from PyQt5.QtGui import QKeySequence, QIntValidator
 from playsound import playsound
 import math
+import concurrent.futures
 
 class SettingsWindow(QDialog):
     def __init__(self, settings):
@@ -183,6 +184,7 @@ class TimerApp(QMainWindow):
         super().__init__()
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer')
         self.sound = "asset/ding.mp3"
+        self.executor = concurrent.futures.ThreadPoolExecutor()
         self.is_complete = False
         self.initUI()
         
@@ -239,6 +241,7 @@ class TimerApp(QMainWindow):
             self.is_complete = False
             self.reset_timer()
         self.timer.start(1000)
+        self.executor.submit(playsound, self.sound)
         
         
     def reset_timer(self):
@@ -265,15 +268,15 @@ class TimerApp(QMainWindow):
         
         if self.elapsed_time == time2 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}°{self.settings.value("temp_type", "F")}')
-            playsound(self.sound)
+            self.executor.submit(playsound, self.sound)
         elif self.elapsed_time == time3 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}°{self.settings.value("temp_type", "F")}')
-            playsound(self.sound)
+            self.executor.submit(playsound, self.sound)
         elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
             self.timer_label.setText('Session Done!')
             self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
-            playsound(self.sound)
+            self.executor.submit(playsound, self.sound)
             self.timer.stop()
             self.is_complete = True
 
