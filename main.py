@@ -108,7 +108,8 @@ class TimerApp(QMainWindow):
         self.initUI()
         
     def initUI(self):
-        self.setWindowTitle('Timer App')
+        self.setWindowTitle('DHV Session Timer')
+        self.setGeometry(100, 100, 400, 150)
         
         self.timer_label = QLabel('0:00', self)
         self.timer_label.setAlignment(Qt.AlignCenter)
