@@ -183,6 +183,7 @@ class TimerApp(QMainWindow):
         super().__init__()
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer')
         self.sound = "asset/ding.mp3"
+        self.is_complete = False
         self.initUI()
         
     def initUI(self):
@@ -234,7 +235,9 @@ class TimerApp(QMainWindow):
             self.start_timer()
         
     def start_timer(self):
-        self.reset_timer()
+        if self.is_complete:
+            self.is_complete = False
+            self.reset_timer()
         self.timer.start(1000)
         
         
@@ -272,6 +275,7 @@ class TimerApp(QMainWindow):
             self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
             playsound(self.sound)
             self.timer.stop()
+            self.is_complete = True
 
 if __name__ == '__main__':
     
