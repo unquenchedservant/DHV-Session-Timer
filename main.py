@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QIntValidator
 from playsound import playsound
 
 class SettingsWindow(QDialog):
@@ -12,32 +12,42 @@ class SettingsWindow(QDialog):
         
     def initUI(self):
         self.setWindowTitle('Settings')
-        self.setGeometry(100, 100, 600, 200)
+       # self.setGeometry(100, 100, 600, 200)
+
+        onlyInt = QIntValidator(50, 428, self)
         
         main_layout = QHBoxLayout()
         
         # Temperature settings
         temp_layout = QFormLayout()
         
-        self.temp1_input = QComboBox(self)
-        self.temp1_input.addItems([str(i) for i in range(122, 429)])
-        self.temp1_input.setCurrentText(self.settings.value('temp1', '350'))
+        self.temp1_input = QLineEdit(self)
+        self.temp1_input.setValidator(onlyInt)
+        self.temp1_input.setText(self.settings.value('temp1', '350'))
+        self.temp1_input.setFixedWidth(40)
         temp_layout.addRow('Temp 1:', self.temp1_input)
         
-        self.temp2_input = QComboBox(self)
-        self.temp2_input.addItems([str(i) for i in range(122, 429)])
-        self.temp2_input.setCurrentText(self.settings.value('temp2', '375'))
+        self.temp2_input = QLineEdit(self)
+        self.temp2_input.setValidator(onlyInt)
+        self.temp2_input.setText(self.settings.value('temp2', '375'))
+        self.temp2_input.setFixedWidth(40)
         temp_layout.addRow('Temp 2:', self.temp2_input)
         
-        self.temp3_input = QComboBox(self)
-        self.temp3_input.addItems([str(i) for i in range(122, 429)])
-        self.temp3_input.setCurrentText(self.settings.value('temp3', '400'))
+        self.temp3_input = QLineEdit(self)
+        self.temp3_input.setValidator(onlyInt)
+        self.temp3_input.setText(self.settings.value('temp3', '400'))
+        self.temp3_input.setFixedWidth(40)
         temp_layout.addRow('Temp 3:', self.temp3_input)
+        temp_widget = QWidget()
+        temp_widget.setLayout(temp_layout)
+        temp_widget.setFixedWidth(140)
         
         # Time settings
         time_layout = QFormLayout()
         
-        self.time1_input = QLabel("0",self)
+        self.time1_input = QComboBox(self)
+        self.time1_input.addItem("0")
+        self.time1_input.setEnabled(False)
         time_layout.addRow('Time (min)', self.time1_input)
         
         self.time2_input = QComboBox(self)
@@ -55,9 +65,13 @@ class SettingsWindow(QDialog):
         self.time4_input.setCurrentText(self.settings.value('time4', '10'))
         time_layout.addRow('End Time (min):', self.time4_input)
 
+        time_widget = QWidget()
+        time_widget.setLayout(time_layout)
+        time_widget.setFixedWidth(140)
+
         # Add layouts to main layout
-        main_layout.addLayout(temp_layout)
-        main_layout.addLayout(time_layout)
+        main_layout.addWidget(temp_widget)
+        main_layout.addWidget(time_widget)
 
         save_button = QPushButton('Save', self)
         save_button.clicked.connect(self.save_settings)
@@ -74,12 +88,13 @@ class SettingsWindow(QDialog):
         self.setLayout(layout)
     
     def save_settings(self):
-        temp1 = int(self.temp1_input.currentText())
-        temp2 = int(self.temp2_input.currentText())
-        temp3 = int(self.temp3_input.currentText())
+        temp1 = int(self.temp1_input.text())
+        temp2 = int(self.temp2_input.text())
+        temp3 = int(self.temp3_input.text())
         time2 = int(self.time2_input.currentText())
         time3 = int(self.time3_input.currentText())
         time4 = int(self.time4_input.currentText())
+        unit = self.temp_unit.currentText()
         if not time3 > time2 or not time4 > time3:
             self.error_msg.setText('Invalid time settings. Ensure each time is greater than the previous')
             self.error_msg.show()
