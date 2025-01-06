@@ -71,15 +71,19 @@ class TimerApp(QMainWindow):
         self.elapsed_time = 0
         
     def start_timer(self):
-        self.timer.start(1000)
+        self.reset_timer()
+        self.timer.start()
         
     def stop_timer(self):
-        self.timer.stop()
+        self.reset_timer()
         
     def reset_timer(self):
         self.timer.stop()
         self.elapsed_time = 0
         self.timer_label.setText('0:00')
+        self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
+        self.temp_label.setText('Temp: 350')
+        self.temp_label.show()
 
     def open_settings(self):
         self.settings_window = SettingsWindow()
@@ -97,10 +101,11 @@ class TimerApp(QMainWindow):
         elif self.elapsed_time == 8 * 60:
             self.temp_label.setText('Temp: 400')
             playsound(self.sound)
-        elif self.elapsed_time == 10 * 60:
+        elif self.elapsed_time == 10*60:
             self.temp_label.hide()
-            playsound(self.sound)
             self.timer_label.setText('Session Done!')
+            self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
+            playsound(self.sound)
             self.timer.stop()
 
 if __name__ == '__main__':
