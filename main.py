@@ -148,7 +148,7 @@ class TimerApp(QMainWindow):
         
     def start_timer(self):
         self.reset_timer()
-        self.timer.start()
+        self.timer.start(1000)
         
         
     def reset_timer(self):
