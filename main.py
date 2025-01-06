@@ -241,7 +241,6 @@ class TimerApp(QMainWindow):
             self.is_complete = False
             self.reset_timer()
         self.timer.start(1000)
-        self.executor.submit(playsound, self.sound)
         
         
     def reset_timer(self):
