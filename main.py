@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QLineEdit, QMainWindow, QComboBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
 from PyQt5.QtGui import QIntValidator
 from playsound import playsound
@@ -91,12 +91,12 @@ class SettingsWindow(QDialog):
             self.error_msg.show()
             return
         
-        self.settings.setValue('temp1', temp1)
-        self.settings.setValue('temp2', temp2)
-        self.settings.setValue('temp3', temp3)
-        self.settings.setValue('time2', time2)
-        self.settings.setValue('time3', time3)
-        self.settings.setValue('time4', time4)
+        self.settings.setValue('temp1', str(temp1))
+        self.settings.setValue('temp2', str(temp2))
+        self.settings.setValue('temp3', str(temp3))
+        self.settings.setValue('time2', str(time2))
+        self.settings.setValue('time3', str(time3))
+        self.settings.setValue('time4', str(time4))
         self.accept()
     
 
@@ -176,14 +176,17 @@ class TimerApp(QMainWindow):
         minutes = self.elapsed_time // 60
         seconds = self.elapsed_time % 60
         self.timer_label.setText(f'{minutes}:{seconds:02}')
+        time2 = int(self.settings.value('time2', '6'))
+        time3 = int(self.settings.value('time3', '8'))
+        time4 = int(self.settings.value('time4', '10'))
         
-        if self.elapsed_time == 6 * 60:
+        if self.elapsed_time == time2 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}')
             playsound(self.sound)
-        elif self.elapsed_time == 8 * 60:
+        elif self.elapsed_time == time3 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}')
             playsound(self.sound)
-        elif self.elapsed_time == 10*60:
+        elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
             self.timer_label.setText('Session Done!')
             self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
