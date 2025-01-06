@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QKeySequence
 from playsound import playsound
 
 class SettingsWindow(QDialog):
@@ -145,6 +145,15 @@ class TimerApp(QMainWindow):
         self.timer.timeout.connect(self.update_timer)
         
         self.elapsed_time = 0
+
+        self.start_shortcut = QShortcut(QKeySequence("Space"), self)
+        self.start_shortcut.activated.connect(self.handle_spacebar)
+
+    def handle_spacebar(self):
+        if self.timer.isActive():
+            self.reset_timer()
+        else:
+            self.start_timer()
         
     def start_timer(self):
         self.reset_timer()
