@@ -84,6 +84,9 @@ class SettingsWindow(QDialog):
 
         save_button = QPushButton('Save', self)
         save_button.clicked.connect(self.save_settings)
+
+        reset_button = QPushButton('Reset', self)
+        reset_button.clicked.connect(self.reset_settings)
         
         self.error_msg = QLabel('Please enter valid temperatures (122-428°F)', self)
         self.error_msg.setStyleSheet("color: red")
@@ -93,6 +96,7 @@ class SettingsWindow(QDialog):
         layout.addLayout(main_layout)
         layout.addWidget(self.error_msg)
         layout.addWidget(save_button)
+        layout.addWidget(reset_button)
         
         self.setLayout(layout)
 
@@ -114,6 +118,29 @@ class SettingsWindow(QDialog):
     
     def c_to_f(self, c_temp):
         return math.ceil(c_temp * 9/5 + 32)
+    
+    def reset_settings(self):
+        '''
+        the following could be used to save the values automatically on reset
+        but I found that it does some weird things if you close the settings window
+        instead of saving after a reset, so i'm just going to leave it out for now
+        
+        self.settings.setValue('temp1', '350')
+        self.settings.setValue('temp2', '375')
+        self.settings.setValue('temp3', '400')
+        self.settings.setValue('time2', '6')
+        self.settings.setValue('time3', '8')
+        self.settings.setValue('time4', '10')
+        self.settings.setValue("temp_type", "F")
+        '''
+        self.temp1_input.setText('350')
+        self.temp2_input.setText('375')
+        self.temp3_input.setText('400')
+        self.time2_input.setCurrentText('6')
+        self.time3_input.setCurrentText('8')
+        self.time4_input.setCurrentText('10')
+        self.temp_unit.setCurrentText('F')
+    
     def save_settings(self):
         temp1 = int(self.temp1_input.text())
         temp2 = int(self.temp2_input.text())
