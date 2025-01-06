@@ -122,9 +122,6 @@ class TimerApp(QMainWindow):
         self.start_button = QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_timer)
         
-        self.stop_button = QPushButton('Stop', self)
-        self.stop_button.clicked.connect(self.stop_timer)
-        
         self.reset_button = QPushButton('Reset', self)
         self.reset_button.clicked.connect(self.reset_timer)
 
@@ -132,16 +129,13 @@ class TimerApp(QMainWindow):
         self.settings_button.clicked.connect(self.open_settings)
         
         layout = QVBoxLayout()
-        start_stop_layout = QHBoxLayout()
-        start_stop_layout.addWidget(self.start_button)
-        start_stop_layout.addWidget(self.stop_button)
-        reset_settings_layout = QHBoxLayout()
-        reset_settings_layout.addWidget(self.reset_button)
-        reset_settings_layout.addWidget(self.settings_button)
+        start_reset_layout = QHBoxLayout()
+        start_reset_layout.addWidget(self.start_button)
+        start_reset_layout.addWidget(self.reset_button)
         layout.addWidget(self.timer_label)
         layout.addWidget(self.temp_label)
-        layout.addLayout(start_stop_layout)
-        layout.addLayout(reset_settings_layout)
+        layout.addLayout(start_reset_layout)
+        layout.addWidget(self.settings_button)
         
         container = QWidget()
         container.setLayout(layout)
@@ -156,8 +150,6 @@ class TimerApp(QMainWindow):
         self.reset_timer()
         self.timer.start()
         
-    def stop_timer(self):
-        self.reset_timer()
         
     def reset_timer(self):
         self.timer.stop()
