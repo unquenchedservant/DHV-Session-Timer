@@ -141,21 +141,14 @@ class SettingsWindow(QDialog):
         :return: None
         """
         if self.temp_unit.currentText() == "F":
-            self.temp1_input.setText(str(self.c_to_f(int(self.temp1_input.text()))))
-            self.temp2_input.setText(str(self.c_to_f(int(self.temp2_input.text()))))
-            self.temp3_input.setText(str(self.c_to_f(int(self.temp3_input.text()))))
+            self.temp1_input.setText(str(math.ceil(self.temp1_input * 9/5 + 32)))
+            self.temp2_input.setText(str(math.ceil(self.temp2_input * 9/5 + 32)))
+            self.temp3_input.setText(str(math.ceil(self.temp3_input * 9/5 + 32)))
         else:
-            self.temp1_input.setText(str(self.f_to_c(int(self.temp1_input.text()))))
-            self.temp2_input.setText(str(self.f_to_c(int(self.temp2_input.text()))))
-            self.temp3_input.setText(str(self.f_to_c(int(self.temp3_input.text()))))
+            self.temp1_input.setText(str(math.floor((self.temp1_input - 32) * 5/9)))
+            self.temp2_input.setText(str(math.floor((self.temp2_input - 32) * 5/9)))
+            self.temp3_input.setText(str(math.floor((self.temp3_input - 32) * 5/9)))
 
-    # Converts Fahrenheit to Celsius
-    def f_to_c(self, f_temp):
-        return math.floor((f_temp - 32) * 5/9)
-    
-    # Converts Celsius to Fahrenheit
-    def c_to_f(self, c_temp):
-        return math.ceil(c_temp * 9/5 + 32)
     
     # Okay, you want the defaults?
     def reset_settings(self):
