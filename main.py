@@ -1,3 +1,10 @@
+"""
+This application is a timer for a Dry-Herb vape with a session. It has 3 temperature settings and 3 time settings.
+It will remind you to increase the temperature at the specified times, and will notify you when the session is complete.
+It was designed with the Arizer Solo 3 in mind, but can be used with most other session vapes.
+
+Created by Jon Thorne © 2025
+"""
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
@@ -6,13 +13,28 @@ from playsound import playsound
 import math
 import concurrent.futures
 
+
 class SettingsWindow(QDialog):
+    """
+    Class to hold the settings window layout and logic.
+    """
     def __init__(self, settings):
+        """
+        Initialize the settings window.
+
+        :param name: settings: The QSettings object to save the settings
+        :return: None
+        """
         super().__init__()
         self.settings = settings
         self.initUI()
         
     def initUI(self):
+        """
+        Initializes the UI for the settings window. Sets the window title, creates the widgets needed, and lays them out.
+
+        :return: None
+        """
         self.setWindowTitle('Settings')
         onlyInt = QIntValidator(50, 428, self) # yes, I also think of OF when I see this variable name
         
@@ -102,12 +124,22 @@ class SettingsWindow(QDialog):
 
     # Allows for the settings window to be closed with the X button, and still save the settings
     def closeEvent(self, event):
+        """
+        Allows for the settings window to be closed with the X button, and still save the settings
+        
+        :param name: event: The close event
+        :return: None
+        """
         self.save_settings() 
         event.accept()    
 
-    # Converts the temperature unit when the combo box is changed, to some rough accuracy
-    # Worth noting that the Solo 3 does the same conversion.
     def temp_unit_change(self):
+        """
+        Converts the temperature unit when the combobox is changed, to some rough accuracy. 
+        The conversion matches what the Solo 3 does as well. 
+
+        :return: None
+        """
         if self.temp_unit.currentText() == "F":
             self.temp1_input.setText(str(self.c_to_f(int(self.temp1_input.text()))))
             self.temp2_input.setText(str(self.c_to_f(int(self.temp2_input.text()))))
@@ -127,6 +159,11 @@ class SettingsWindow(QDialog):
     
     # Okay, you want the defaults?
     def reset_settings(self):
+        """
+        Resets the settings to the default values.
+
+        :return: None
+        """
         self.settings.setValue('temp1', '350')
         self.settings.setValue('temp2', '375')
         self.settings.setValue('temp3', '400')
@@ -145,6 +182,10 @@ class SettingsWindow(QDialog):
         # You got 'em
 
     def save_settings(self):
+        """
+        Checks to make sure that all values for both temp and time are valid, and then
+        saves the settings to the QSettings object.
+        """
         # First we need to get the int values for the editable settings
         temp1 = int(self.temp1_input.text())
         temp2 = int(self.temp2_input.text())
@@ -183,7 +224,15 @@ class SettingsWindow(QDialog):
         self.accept() # Save them settings!
 
 class TimerApp(QMainWindow):
+    """
+    Class to hold the main window layout and logic. Main window of the application
+    """
     def __init__(self):
+        """
+        initialize the main window, settings, and concurrent stream executor.
+
+        :return: None
+        """
         super().__init__()
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer') # initialize settings
         self.sound = "asset/ding.mp3" # This is the almighty ding
@@ -192,6 +241,11 @@ class TimerApp(QMainWindow):
         self.initUI()
         
     def initUI(self):
+        """
+        Initializes the UI for the main window. Sets the window title, creates the widgets needed, and lays them out.
+
+        :return: None
+        """
         self.setWindowTitle('DHV Session Timer')
         self.setGeometry(100, 100, 400, 150)
         
@@ -246,6 +300,12 @@ class TimerApp(QMainWindow):
         self.start_shortcut.activated.connect(self.handle_spacebar)
 
     def handleWindow(self):
+        """
+        If the checkbox is checked, the window stays on top. If unchecked, the window behaves normally.
+        This does have the adverse effect of flashing the window, but as far as I can tell, timing stays consistent.
+
+        :return: None
+        """
         if self.keep_active_checkbox.isChecked():
             self.setWindowFlags(Qt.WindowStaysOnTopHint)
             self.show()
@@ -254,12 +314,25 @@ class TimerApp(QMainWindow):
             self.show()
 
     def handle_spacebar(self):
+        """
+        Space bar acts as a start/stop button. If the timer is active, reset the timer. If the timer isn't active, start the timer. 
+        
+        :return: None
+        """
         if self.timer.isActive():
             self.reset_timer()
         else:
             self.start_timer()
         
     def start_timer(self):
+        """
+        This is done for efficiency sake. 
+        Allows the user to press the start button at the end of a completed session to start a new one, but
+        reset_timer() takes a little time, which isn't great when you want to start a timer. 
+        This only calls reset_timer() if the timer is active, otherwise it starts the timer without doing that.
+
+        :return: None
+        """
         if self.is_complete: # Our friend is_complete is here!
             self.is_complete = False # No longer is_complete
             self.reset_timer() # reset everything, just in case (if the user hits start after the session ends to start a new one)
@@ -267,7 +340,13 @@ class TimerApp(QMainWindow):
         
         
     def reset_timer(self):
-        # Handles resetting the timer
+        """
+        Handles resetting the timer. Stops the timer, sets the elapsed_time variable to 0,
+        sets the timer_label text to 0:00, and shows the first temp label again (as this would have been hidden at the end of 
+        the session)
+
+        :return: None
+        """
         self.timer.stop() 
         self.elapsed_time = 0
         self.timer_label.setText('0:00')
@@ -276,12 +355,27 @@ class TimerApp(QMainWindow):
         self.temp_label.show() # We're going to hide this when the session is complete, so we need to show it again
 
     def open_settings(self):
+        """
+        Opens the settings, connected to self.settings_button.
+
+        :return: None
+        """
         settings_window = SettingsWindow(self.settings)
         if settings_window.exec_():
             # Updates the temp label to reflect the new temp settings
             self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}")
        
     def update_timer(self):
+        """
+        Called every second by the timer.
+        Increments the elapsed_time variable by 1, converts the seconds to a human readable format (mm:ss),
+        and updates the timer_label text to the new time. At user set intervals (default 6, 8, and 10 minutes), it will ding
+        indicating that either an increase in temperature is needed or the session is complete. If the session is complete, 
+        it will show that in green text and the temperature label will hide, also stopping the timer so that update_timer() 
+        is no longer called
+
+        :return: None
+        """
         self.elapsed_time += 1
         minutes = self.elapsed_time // 60
         seconds = self.elapsed_time % 60
