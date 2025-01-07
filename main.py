@@ -101,7 +101,9 @@ class SettingsWindow(QDialog):
         
         self.setLayout(layout)
 
-    
+    def closeEvent(self, event):
+        self.save_settings()
+        event.accept()    
 
     def temp_unit_change(self):
         if self.temp_unit.currentText() == "F":
@@ -121,19 +123,15 @@ class SettingsWindow(QDialog):
         return math.ceil(c_temp * 9/5 + 32)
     
     def reset_settings(self):
-        '''
-        the following could be used to save the values automatically on reset
-        but I found that it does some weird things if you close the settings window
-        instead of saving after a reset, so i'm just going to leave it out for now
 
         self.settings.setValue('temp1', '350')
         self.settings.setValue('temp2', '375')
         self.settings.setValue('temp3', '400')
+        self.settings.setValue('temp_unit', 'F')
         self.settings.setValue('time2', '6')
         self.settings.setValue('time3', '8')
         self.settings.setValue('time4', '10')
-        self.settings.setValue("temp_type", "F")
-        '''
+
         self.temp1_input.setText('350')
         self.temp2_input.setText('375')
         self.temp3_input.setText('400')

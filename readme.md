@@ -31,4 +31,4 @@ I had a Stop button, but I had it tied to Reset, so may as well just keep Reset.
 
 The temperature automatically converts if you switch between Celsius and Fahrenheit, but it's not perfect, so some manual editing may need to occur there.
 
-Using the reset button in settings won't save the reset settings, you have to hit save after as well (Looking in to this for a future update)
+~~Using the reset button in settings won't save the reset settings, you have to hit save after as well (Looking in to this for a future update)~~ This is no longer the case, settings are saved when reset, and hitting "Save" is no longer necessary
