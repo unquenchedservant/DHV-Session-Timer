@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import QTimer, Qt, QSettings
 from PyQt5.QtGui import QKeySequence, QIntValidator
 from playsound import playsound
@@ -205,6 +205,9 @@ class TimerApp(QMainWindow):
         self.temp_label.setAlignment(Qt.AlignCenter)
         self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
         
+        self.keep_active_checkbox = QCheckBox('Keep Win on Top', self) # This is to make it so the window stays on top 
+        self.keep_active_checkbox.stateChanged.connect(self.handleWindow)
+
         self.start_button = QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_timer)
         
@@ -219,11 +222,14 @@ class TimerApp(QMainWindow):
         start_reset_layout = QHBoxLayout() # Oh, surprise horizontal for the save and reset buttons!
         start_reset_layout.addWidget(self.start_button)
         start_reset_layout.addWidget(self.reset_button)
+        settings_checkbox_layout = QHBoxLayout() # Horizontal layout for the settings button and Keep Active checkbox
+        settings_checkbox_layout.addWidget(self.settings_button)
+        settings_checkbox_layout.addWidget(self.keep_active_checkbox) 
         # Adds widgets/layouts in the following order: timer, temp, start/reset buttons, settings button
         layout.addWidget(self.timer_label) 
         layout.addWidget(self.temp_label)
         layout.addLayout(start_reset_layout)
-        layout.addWidget(self.settings_button)
+        layout.addLayout(settings_checkbox_layout)
         
         # We need to contain the layout
         container = QWidget()
@@ -238,6 +244,14 @@ class TimerApp(QMainWindow):
         # Spacebar to start/stop the timer
         self.start_shortcut = QShortcut(QKeySequence("Space"), self)
         self.start_shortcut.activated.connect(self.handle_spacebar)
+
+    def handleWindow(self):
+        if self.keep_active_checkbox.isChecked():
+            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.show()
+        else:
+            self.setWindowFlags(Qt.Widget)
+            self.show()
 
     def handle_spacebar(self):
         if self.timer.isActive():
