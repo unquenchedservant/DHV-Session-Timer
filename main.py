@@ -9,10 +9,14 @@ import sys
 import os
 from PyQt6.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtCore import QTimer, Qt, QSettings
-from PyQt6.QtGui import QKeySequence, QIntValidator, QShortcut
+from PyQt6.QtGui import QKeySequence, QPalette, QIntValidator, QShortcut
 from pygame import mixer
 import math
 import concurrent.futures
+
+def is_system_dark_mode():
+    palette = QApplication.instance().palette()
+    return palette.color(QPalette.ColorRole.Window).lightness() < 128
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -434,14 +438,24 @@ class TimerApp(QMainWindow):
         elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
             # Woo! You made it, let's do it again!! (or not, if you don't want to)
-            self.timer_label.setText('Session Done!')
-            self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
+            self.timer_label.setText('Session \nDone!')
+            if is_system_dark_mode():
+                self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
+            else:
+                self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
             self.executor.submit(mixer.music.play)
             self.timer.stop()
             self.is_complete = True
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    if is_system_dark_mode():
+        with open (resource_path("asset\\style-dark.qss"), "r") as f:
+            app.setStyleSheet(f.read())
+    else:
+        with open (resource_path("asset\\style.qss"), "r") as f:
+            app.setStyleSheet(f.read())
+    #app.setStyle('Fusion')
     ex = TimerApp()
     ex.show()
     sys.exit(app.exec())
