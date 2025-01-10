@@ -6,13 +6,23 @@ It was designed with the Arizer Solo 3 in mind, but can be used with most other 
 Created by Jon Thorne © 2025
 """
 import sys
+import os
 from PyQt6.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtCore import QTimer, Qt, QSettings
 from PyQt6.QtGui import QKeySequence, QIntValidator, QShortcut
-from playsound import playsound
+from pygame import mixer
 import math
 import concurrent.futures
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class SettingsWindow(QDialog):
     """
@@ -255,7 +265,7 @@ class TimerApp(QMainWindow):
         """
         super().__init__()
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer') # initialize settings
-        self.sound = "asset/ding.mp3" # This is the almighty ding
+        self.sound = resource_path("asset\\ding.mp3") # This is the almighty ding
         if self.settings.value('keep_active_default', "False") == "True":
             self.keep_on_top = True # Grab the default keep on top setting
             self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
@@ -412,19 +422,21 @@ class TimerApp(QMainWindow):
         time2 = int(self.settings.value('time2', '6')) # Remember how these values are strings? they need to be ints again
         time3 = int(self.settings.value('time3', '8')) 
         time4 = int(self.settings.value('time4', '10'))
-        
+        mixer.init()
+        mixer.music.load(self.sound)
+
         if self.elapsed_time == time2 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp2", "375")}°{self.settings.value("temp_type", "F")}')
-            self.executor.submit(playsound, self.sound) # plays the almighty ding asynchronously
+            self.executor.submit(mixer.music.play) # plays the almighty ding asynchronously
         elif self.elapsed_time == time3 * 60:
             self.temp_label.setText(f'Temp: {self.settings.value("temp3", "400")}°{self.settings.value("temp_type", "F")}')
-            self.executor.submit(playsound, self.sound)
+            self.executor.submit(mixer.music.play)
         elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
             # Woo! You made it, let's do it again!! (or not, if you don't want to)
             self.timer_label.setText('Session Done!')
             self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
-            self.executor.submit(playsound, self.sound)
+            self.executor.submit(mixer.music.play)
             self.timer.stop()
             self.is_complete = True
 
