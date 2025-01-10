@@ -6,9 +6,9 @@ It was designed with the Arizer Solo 3 in mind, but can be used with most other 
 Created by Jon Thorne © 2025
 """
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QShortcut, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
-from PyQt5.QtCore import QTimer, Qt, QSettings
-from PyQt5.QtGui import QKeySequence, QIntValidator
+from PyQt6.QtWidgets import QApplication, QMainWindow, QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt6.QtCore import QTimer, Qt, QSettings
+from PyQt6.QtGui import QKeySequence, QIntValidator, QShortcut
 from playsound import playsound
 import math
 import concurrent.futures
@@ -258,10 +258,10 @@ class TimerApp(QMainWindow):
         self.sound = "asset/ding.mp3" # This is the almighty ding
         if self.settings.value('keep_active_default', "False") == "True":
             self.keep_on_top = True # Grab the default keep on top setting
-            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         else:
             self.keep_on_top = False
-            self.setWindowFlags(Qt.Widget)
+            self.setWindowFlags(Qt.WindowType.Widget)
         self.executor = concurrent.futures.ThreadPoolExecutor() # Needed for running the sound asynchronously
         self.is_complete = False # Used to check if the session is complete, helps with the start button efficiency
         self.initUI()
@@ -277,12 +277,12 @@ class TimerApp(QMainWindow):
         
         # the timer label has to be nice and big and bold
         self.timer_label = QLabel('0:00', self) 
-        self.timer_label.setAlignment(Qt.AlignCenter) 
-        self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
+        self.timer_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
+        self.timer_label.setStyleSheet("font-size: 48px; font-weight: bold;")
         
         # the temp label is smaller and gray. Still mighty, but not as mighty.
         self.temp_label = QLabel(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}", self)
-        self.temp_label.setAlignment(Qt.AlignCenter)
+        self.temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
         
         self.keep_active_checkbox = QCheckBox('Keep Win on Top', self) # This is to make it so the window stays on top
@@ -334,11 +334,11 @@ class TimerApp(QMainWindow):
         :return: None
         """
         if self.keep_active_checkbox.isChecked():
-            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
             self.keep_on_top = True
             self.show()
         else:
-            self.setWindowFlags(Qt.Widget)
+            self.setWindowFlags(Qt.WindowType.Widget)
             self.keep_on_top = False
             self.show()
 
@@ -390,7 +390,7 @@ class TimerApp(QMainWindow):
         :return: None
         """
         settings_window = SettingsWindow(self.settings)
-        if settings_window.exec_():
+        if settings_window.exec():
             # Updates the temp label to reflect the new temp settings
             self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}")
        
@@ -432,4 +432,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = TimerApp()
     ex.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
