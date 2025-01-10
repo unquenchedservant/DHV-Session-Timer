@@ -389,7 +389,7 @@ class TimerApp(QMainWindow):
         self.timer.stop() 
         self.elapsed_time = 0
         self.timer_label.setText('0:00')
-        self.timer_label.setStyleSheet("font-size: 48px; color: black; font-weight: bold;")
+        self.timer_label.setStyleSheet("font-size: 48px; font-weight: bold;")
         self.temp_label.setText(f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value("temp_type", "F")}")
         self.temp_label.show() # We're going to hide this when the session is complete, so we need to show it again
 
