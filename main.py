@@ -449,23 +449,16 @@ class TimerApp(QMainWindow):
             self.temp_label.hide()
             # Woo! You made it, let's do it again!! (or not, if you don't want to)
             self.timer_label.setText('Session \nDone!')
-            if is_system_dark_mode():
-                self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
-            else:
-                self.timer_label.setStyleSheet("font-size: 38px; color: green; font-weight: bold;")
+            self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
             self.executor.submit(mixer.music.play)
             self.timer.stop()
             self.is_complete = True
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    if is_system_dark_mode():
-        with open (resource_path("asset\\style-dark.qss"), "r") as f:
-            app.setStyleSheet(f.read())
-    else:
-        with open (resource_path("asset\\style.qss"), "r") as f:
-            app.setStyleSheet(f.read())
-    #app.setStyle('Fusion')
+    with open (resource_path("asset\\style.qss"), "r") as f:
+        app.setStyleSheet(f.read())
+    app.setStyle('Fusion')
     ex = TimerApp()
     ex.show()
     sys.exit(app.exec())
