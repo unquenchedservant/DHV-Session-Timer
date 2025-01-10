@@ -287,7 +287,9 @@ class TimerApp(QMainWindow):
         :return: None
         """
         self.setWindowTitle('DHV Session Timer')
-        self.setGeometry(100, 100, 400, 150)
+        self.restoreGeometry(self.settings.value("geometry", b"")) # Restores the window size and position
+        palette = QApplication.instance().palette()
+        self.setPalette(palette)
         
         # the timer label has to be nice and big and bold
         self.timer_label = QLabel('0:00', self) 
@@ -339,6 +341,14 @@ class TimerApp(QMainWindow):
         # Spacebar to start/stop the timer
         self.start_shortcut = QShortcut(QKeySequence("Space"), self)
         self.start_shortcut.activated.connect(self.handle_spacebar)
+
+    def closeEvent(self, event):
+        """
+        Saves the window size and position when the window is closed.
+
+        :return: None
+        """
+        self.settings.setValue("geometry", self.saveGeometry())
 
     def handleWindow(self):
         """
