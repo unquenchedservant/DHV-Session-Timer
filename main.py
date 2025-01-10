@@ -27,6 +27,10 @@ class SettingsWindow(QDialog):
         """
         super().__init__()
         self.settings = settings
+        if self.settings.value('keep_active_default', "False") == "True":
+            self.keep_active = True
+        else:
+            self.keep_active = False
         self.initUI()
         
     def initUI(self):
@@ -104,6 +108,17 @@ class SettingsWindow(QDialog):
         main_layout.addWidget(temp_widget)
         main_layout.addWidget(time_widget)
 
+        # Add a slider to default the Windows Active setting
+        self.keep_active_label = QLabel('Keep Win on Top by Default', self)
+        self.keep_active_default_slider = QCheckBox(self)
+        self.keep_active_default_slider.setChecked(self.keep_active)
+        self.keep_active_default_slider.stateChanged.connect(self.handle_slider)
+
+        keep_active_layout = QHBoxLayout()
+        keep_active_layout.addWidget(self.keep_active_label)
+        keep_active_layout.addWidget(self.keep_active_default_slider)
+
+
         save_button = QPushButton('Save', self)
         save_button.clicked.connect(self.save_settings)
 
@@ -117,10 +132,19 @@ class SettingsWindow(QDialog):
         layout = QVBoxLayout()
         layout.addLayout(main_layout)
         layout.addWidget(self.error_msg)
+        layout.addLayout(keep_active_layout)
         layout.addWidget(save_button)
         layout.addWidget(reset_button)
         
         self.setLayout(layout)
+
+    def handle_slider(self):
+        """
+        Handles the slider for the keep active default setting. 
+
+        :return: None
+        """
+        self.settings.setValue('keep_active_default', self.keep_active_default_slider.isChecked())
 
     # Allows for the settings window to be closed with the X button, and still save the settings
     def closeEvent(self, event):
@@ -164,6 +188,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time2', '6')
         self.settings.setValue('time3', '8')
         self.settings.setValue('time4', '10')
+        self.settings.setValue('keep_active_default', "False")
 
         self.temp1_input.setText('350')
         self.temp2_input.setText('375')
@@ -172,6 +197,7 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
+        self.keep_active_default_slider.setChecked("False")
         # You got 'em
 
     def save_settings(self):
@@ -214,6 +240,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time3', str(time3))
         self.settings.setValue('time4', str(time4))
         self.settings.setValue("temp_type", unit)
+        self.settings.setValue('keep_active_default', str(self.keep_active_default_slider.isChecked()))
         self.accept() # Save them settings!
 
 class TimerApp(QMainWindow):
@@ -229,6 +256,12 @@ class TimerApp(QMainWindow):
         super().__init__()
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer') # initialize settings
         self.sound = "asset/ding.mp3" # This is the almighty ding
+        if self.settings.value('keep_active_default', "False") == "True":
+            self.keep_on_top = True # Grab the default keep on top setting
+            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        else:
+            self.keep_on_top = False
+            self.setWindowFlags(Qt.Widget)
         self.executor = concurrent.futures.ThreadPoolExecutor() # Needed for running the sound asynchronously
         self.is_complete = False # Used to check if the session is complete, helps with the start button efficiency
         self.initUI()
@@ -252,7 +285,8 @@ class TimerApp(QMainWindow):
         self.temp_label.setAlignment(Qt.AlignCenter)
         self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
         
-        self.keep_active_checkbox = QCheckBox('Keep Win on Top', self) # This is to make it so the window stays on top 
+        self.keep_active_checkbox = QCheckBox('Keep Win on Top', self) # This is to make it so the window stays on top
+        self.keep_active_checkbox.setChecked(self.keep_on_top) # Grab state from settings
         self.keep_active_checkbox.stateChanged.connect(self.handleWindow)
 
         self.start_button = QPushButton('Start', self)
@@ -301,9 +335,11 @@ class TimerApp(QMainWindow):
         """
         if self.keep_active_checkbox.isChecked():
             self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.keep_on_top = True
             self.show()
         else:
             self.setWindowFlags(Qt.Widget)
+            self.keep_on_top = False
             self.show()
 
     def handle_spacebar(self):
