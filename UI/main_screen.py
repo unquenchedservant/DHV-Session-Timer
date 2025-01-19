@@ -7,6 +7,7 @@ from PyQt6.QtGui import QKeySequence, QShortcut
 from pygame import mixer
 from utilities import resource_path
 import concurrent.futures
+from sys import platform
 from .settings_screen import SettingsWindow
 
 class TimerApp(QMainWindow):
@@ -20,8 +21,12 @@ class TimerApp(QMainWindow):
         :return: None
         """
         super().__init__()
+        if platform == "linux" or platform == "linux2" or platform == "darwin":
+            resource = "asset/ding.mp3"
+        else:
+            resource = "asset\\ding.mp3"
         self.settings = QSettings('UnquenchedServant', 'DHV-Session-Timer') # initialize settings
-        self.sound = resource_path("asset\\ding.mp3") # This is the almighty ding
+        self.sound = resource_path(resource) # This is the almighty ding
         if self.settings.value('keep_active_default', "False") == "True":
             self.keep_on_top = True # Grab the default keep on top setting
             self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)

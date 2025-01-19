@@ -13,7 +13,11 @@ from UI.main_screen import TimerApp
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    with open (resource_path("asset\\style.qss"), "r") as f:
+    if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
+        resource = "asset/style.qss"
+    else:
+        resource = "asset\\style.qss"
+    with open (resource_path(resource), "r") as f:
         app.setStyleSheet(f.read())
     app.setStyle('Fusion')
     ex = TimerApp()
