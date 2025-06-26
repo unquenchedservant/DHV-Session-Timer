@@ -99,6 +99,8 @@ class TimerApp(QMainWindow):
 
         self.settings_button = QPushButton("Settings", self)
         self.settings_button.clicked.connect(self.open_settings)
+        if not self.is_complete:
+            self.settings_button.isEnabled = False
 
         # Let's lay this out
         layout = QVBoxLayout()  # Lil vertical box to hold everything
@@ -176,6 +178,9 @@ class TimerApp(QMainWindow):
 
         :return: None
         """
+        self.settings_button.setEnabled(False)
+        self.settings_button.
+        self.start_button.setText("Stop/Reset")
         if self.is_complete:  # Our friend is_complete is here!
             self.is_complete = False  # No longer is_complete
             self.reset_timer()  # reset everything, just in case (if the user hits start after the session ends to start a new one)
@@ -199,7 +204,8 @@ class TimerApp(QMainWindow):
         self.temp_label.show()  # We're going to hide this when the session is complete, so we need to show it again
 
     def open_settings(self):
-        """
+        """        self.settings_button.disconnect()
+
         Opens the settings, connected to self.settings_button.
 
         :return: None
@@ -226,46 +232,47 @@ class TimerApp(QMainWindow):
         minutes = self.elapsed_time // 60
         seconds = self.elapsed_time % 60
         self.timer_label.setText(f"{minutes}:{seconds:02}")
-        time2 = int(
-            self.settings.value("time2", "6")
-        )  # Remember how these values are strings? they need to be ints again
+        time2 = int(self.settings.value("time2", "6"))
         time3 = int(self.settings.value("time3", "8"))
         time4 = int(self.settings.value("time4", "10"))
         mixer.init()
         mixer.music.load(self.sound)
+        notif_on = True if self.settings.value('notifications', 'True') == "True" else False
         timeout = 5
         temp2 = self.settings.value("temp2", "375")
         temp3 = self.settings.value("temp3", "400")
         temp_type = self.settings.value("temp_type", "F")
         if self.elapsed_time == time2 * DEBUG_TIME:
             self.temp_label.setText(f"Temp: {temp2}°{temp_type}")
-            notification.notify(
-                title="DHVSessionTimer Stage 2",
-                message=f"Heat: {temp2}°{temp_type}",
-                timeout=timeout,
-            )
+            if notif_on:
+                notification.notify(
+                    title="DHVSessionTimer Stage 2",
+                    message=f"Temp: {temp2}°{temp_type}",
+                    timeout=timeout,
+                )
             self.executor.submit(
                 mixer.music.play
             )  # plays the almighty ding asynchronously
         elif self.elapsed_time == time3 * 60:
-            self.temp_label.setText(f"{temp3}°{temp_type}")
-            notification.notify(
-                "DHVSessionTimer Stage 3",
-                message=f"Heat: {temp3}°{temp_type}",
-                timeout=timeout,
-            )
+            self.temp_label.setText(f"Temp: {temp3}°{temp_type}")
+            if notif_on:
+                notification.notify(
+                    "DHVSessionTimer Stage 3",
+                    message=f"Temp: {temp3}°{temp_type}",
+                    timeout=timeout,
+                )
             self.executor.submit(mixer.music.play)
         elif self.elapsed_time == time4 * 60:
             self.temp_label.hide()
-            # Woo! You made it, let's do it again!! (or not, if you don't want to)
             self.timer_label.setText("Session \nDone!")
             self.timer_label.setStyleSheet(
                 "font-size: 38px; color: #9cb9d3; font-weight: bold;"
             )
-            notification.notify(
-                "DHVSessionTimer Session Done", message=f"", timeout=timeout
-            )
+            if notif_on:
+                notification.notify(
+                    "DHVSessionTimer Session Done", message=f"", timeout=timeout
+                )
             self.executor.submit(mixer.music.play)
             self.timer.stop()
+            self.settings_button.setEnabled(True)
             self.is_complete = True
-
