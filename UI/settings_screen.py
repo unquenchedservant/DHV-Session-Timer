@@ -194,6 +194,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time2', '6')
         self.settings.setValue('time3', '8')
         self.settings.setValue('time4', '10')
+        self.settings.setValue("notifications", "True")
         self.settings.setValue('keep_active_default', "False")
 
         self.temp1_input.setText('350')
@@ -203,7 +204,8 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
-        self.keep_active_default_slider.setChecked("False")
+        self.notifications_slider.setChecked(True)
+        self.keep_active_default_slider.setChecked(False)
         # You got 'em
 
     def save_settings(self):
