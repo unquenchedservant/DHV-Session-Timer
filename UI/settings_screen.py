@@ -22,6 +22,8 @@ class SettingsWindow(QDialog):
             self.keep_active = True
         else:
             self.keep_active = False
+
+        self.notifications = True if self.settings.value('notifications', 'True') == "True" else False
         self.initUI()
         
     def initUI(self):
@@ -105,10 +107,19 @@ class SettingsWindow(QDialog):
         self.keep_active_default_slider.setChecked(self.keep_active)
         self.keep_active_default_slider.stateChanged.connect(self.handle_slider)
 
+        # Add a checkbox to default the Notifications setting
+        self.notifications_label = QLabel('Notifications', self)
+        self.notifications_slider = QCheckBox(self)
+        self.notifications_slider.setChecked(self.notifications)
+        self.notifications_slider.stateChanged.connect(self.handle_notifications)
+
         keep_active_layout = QHBoxLayout()
         keep_active_layout.addWidget(self.keep_active_label)
         keep_active_layout.addWidget(self.keep_active_default_slider)
 
+        notifications_layout = QHBoxLayout()
+        notifications_layout.addWidget(self.notifications_label)
+        notifications_layout.addWidget(self.notifications_slider)
 
         save_button = QPushButton('Save', self)
         save_button.clicked.connect(self.save_settings)
@@ -123,6 +134,7 @@ class SettingsWindow(QDialog):
         layout = QVBoxLayout()
         layout.addLayout(main_layout)
         layout.addWidget(self.error_msg)
+        layout.addLayout(notifications_layout)
         layout.addLayout(keep_active_layout)
         layout.addWidget(save_button)
         layout.addWidget(reset_button)
@@ -136,6 +148,9 @@ class SettingsWindow(QDialog):
         :return: None
         """
         self.settings.setValue('keep_active_default', self.keep_active_default_slider.isChecked())
+    
+    def handle_notifications(self):
+        self.settings.setValue('notifications', f"{self.notifications_slider.isChecked()}")
 
     # Allows for the settings window to be closed with the X button, and still save the settings
     def closeEvent(self, event):
