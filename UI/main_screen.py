@@ -22,7 +22,7 @@ from .settings_screen import SettingsWindow
 from plyer import notification
 
 
-DEBUG_TIME = 1
+DEBUG_TIME = 60
 
 
 class TimerApp(QMainWindow):
@@ -54,6 +54,7 @@ class TimerApp(QMainWindow):
         self.executor = (
             concurrent.futures.ThreadPoolExecutor()
         )  # Needed for running the sound asynchronously
+        self.started = False
         self.is_complete = False  # Used to check if the session is complete, helps with the start button efficiency
         self.initUI()
 
@@ -165,6 +166,8 @@ class TimerApp(QMainWindow):
         :return: None
         """
         if self.timer.isActive():
+            self.settings_button.setEnabled(True)
+            self.start_button.setText("Start")
             self.reset_timer()
         else:
             self.start_timer()
@@ -178,13 +181,20 @@ class TimerApp(QMainWindow):
 
         :return: None
         """
-        self.settings_button.setEnabled(False)
-        self.settings_button.
-        self.start_button.setText("Stop/Reset")
-        if self.is_complete:  # Our friend is_complete is here!
-            self.is_complete = False  # No longer is_complete
-            self.reset_timer()  # reset everything, just in case (if the user hits start after the session ends to start a new one)
-        self.timer.start(1000)  # 1000 ms = 1 second
+        if self.started:
+            self.reset_timer()
+            self.is_complete = False
+            self.started = False
+            self.settings_button.setEnabled(True)
+            self.start_button.setText("Start")
+        else:
+            self.started = True
+            self.settings_button.setEnabled(False)
+            self.start_button.setText("Stop/Reset")
+            if self.is_complete:  # Our friend is_complete is here!
+                self.is_complete = False  # No longer is_complete
+                self.reset_timer()  # reset everything, just in case (if the user hits start after the session ends to start a new one)
+            self.timer.start(1000)  # 1000 ms = 1 second
 
     def reset_timer(self):
         """
