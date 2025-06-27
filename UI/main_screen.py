@@ -248,7 +248,7 @@ class TimerApp(QMainWindow):
         mixer.init()
         mixer.music.load(self.sound)
         notif_on = True if self.settings.value('notifications', 'True') == "True" else False
-        timeout = 5
+        timeout = int(self.settings.value('timeout', "10"))
         temp2 = self.settings.value("temp2", "375")
         temp3 = self.settings.value("temp3", "400")
         temp_type = self.settings.value("temp_type", "F")

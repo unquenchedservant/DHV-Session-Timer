@@ -3,6 +3,7 @@ Handles all settings window UI and logic
 """
 from PyQt6.QtWidgets import QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtGui import QIntValidator
+from PyQt6 import QtCore
 import math
 
 class SettingsWindow(QDialog):
@@ -65,10 +66,16 @@ class SettingsWindow(QDialog):
         self.temp_unit.setFixedWidth(40)
         temp_layout.addRow('Temp Unit:', self.temp_unit)
 
+        self.notifications_checkbox = QCheckBox(self)
+        self.notifications_checkbox.setChecked(self.notifications)
+        self.notifications_checkbox.stateChanged.connect(self.handle_notifications)
+        temp_layout.addRow("Notifications:", self.notifications_checkbox)
+
+
         # Create a widget to hold the temp layout, used for spacing
         temp_widget = QWidget() 
         temp_widget.setLayout(temp_layout)
-        temp_widget.setFixedWidth(140) # aforementioned spacing
+        temp_widget.setFixedWidth(200) # aforementioned spacing
         
         # Time settings
         time_layout = QFormLayout() # Like what we did for temp, but with time.
@@ -93,9 +100,15 @@ class SettingsWindow(QDialog):
         self.time4_input.setCurrentText(self.settings.value('time4', '10'))
         time_layout.addRow('End Time (min):', self.time4_input)
 
+        self.notification_timeout = QLineEdit(self)
+        self.notification_timeout.setValidator(onlyInt)
+        self.notification_timeout.setText(self.settings.value('timeout', '10'))
+        self.notification_timeout.setFixedWidth(40)
+        time_layout.addRow('Notif. Timeout:', self.notification_timeout)
+
         time_widget = QWidget() # spacing again
         time_widget.setLayout(time_layout)
-        time_widget.setFixedWidth(140)
+        time_widget.setFixedWidth(200)
 
         # Add widgets to main layout
         main_layout.addWidget(temp_widget)
@@ -107,19 +120,9 @@ class SettingsWindow(QDialog):
         self.keep_active_default_slider.setChecked(self.keep_active)
         self.keep_active_default_slider.stateChanged.connect(self.handle_slider)
 
-        # Add a checkbox to default the Notifications setting
-        self.notifications_label = QLabel('Notifications', self)
-        self.notifications_slider = QCheckBox(self)
-        self.notifications_slider.setChecked(self.notifications)
-        self.notifications_slider.stateChanged.connect(self.handle_notifications)
-
         keep_active_layout = QHBoxLayout()
         keep_active_layout.addWidget(self.keep_active_label)
         keep_active_layout.addWidget(self.keep_active_default_slider)
-
-        notifications_layout = QHBoxLayout()
-        notifications_layout.addWidget(self.notifications_label)
-        notifications_layout.addWidget(self.notifications_slider)
 
         save_button = QPushButton('Save', self)
         save_button.clicked.connect(self.save_settings)
@@ -134,7 +137,6 @@ class SettingsWindow(QDialog):
         layout = QVBoxLayout()
         layout.addLayout(main_layout)
         layout.addWidget(self.error_msg)
-        layout.addLayout(notifications_layout)
         layout.addLayout(keep_active_layout)
         layout.addWidget(save_button)
         layout.addWidget(reset_button)
@@ -150,7 +152,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('keep_active_default', self.keep_active_default_slider.isChecked())
     
     def handle_notifications(self):
-        self.settings.setValue('notifications', f"{self.notifications_slider.isChecked()}")
+        self.settings.setValue('notifications', f"{self.notifications_checkbox.isChecked()}")
 
     # Allows for the settings window to be closed with the X button, and still save the settings
     def closeEvent(self, event):
@@ -196,7 +198,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time4', '10')
         self.settings.setValue("notifications", "True")
         self.settings.setValue('keep_active_default', "False")
-
+        self.settings.setValue("timeout", "10")
         self.temp1_input.setText('350')
         self.temp2_input.setText('375')
         self.temp3_input.setText('400')
@@ -204,6 +206,7 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
+        self.notification_timeout_input.setText("10")
         self.notifications_slider.setChecked(True)
         self.keep_active_default_slider.setChecked(False)
         # You got 'em
@@ -241,12 +244,15 @@ class SettingsWindow(QDialog):
                 return
         # If we get here, the user didn't mess this up. 
         # but now we gotta convert them all back to strings :D
+        notifchecked = "True" if self.notifications_checkbox.isChecked() else "False"
         self.settings.setValue('temp1', str(temp1))
         self.settings.setValue('temp2', str(temp2))
         self.settings.setValue('temp3', str(temp3))
         self.settings.setValue('time2', str(time2))
         self.settings.setValue('time3', str(time3))
         self.settings.setValue('time4', str(time4))
+        self.settings.setValue('timeout', self.notification_timeout.text())
+        #self.settings.setValue('notifications', notifchecked)
         self.settings.setValue("temp_type", unit)
         self.settings.setValue('keep_active_default', str(self.keep_active_default_slider.isChecked()))
         self.accept() # Save them settings!
