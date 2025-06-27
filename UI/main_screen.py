@@ -275,11 +275,12 @@ class TimerApp(QMainWindow):
         elif self.elapsed_time == time3 * DEBUG_TIME:
             self.handle_time_change(temp3, "3")
         elif self.elapsed_time == time4 * DEBUG_TIME:
-            self.temp_label.hide()
             self.handle_time_change("350", "end")
             self.timer_label.setStyleSheet(
                 "font-size: 38px; color: #9cb9d3; font-weight: bold;"
             )
             self.timer.stop()
+            self.started = False
+            self.start_button.setText("Start")
             self.settings_button.setEnabled(True)
             self.is_complete = True
