@@ -228,7 +228,7 @@ class TimerApp(QMainWindow):
             self.temp_label.setText(
                 f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
             )
-            
+
     def handle_time_change(self, temp, stage):
         temp_type = self.settings.value("temp_type", "F")
         if stage == "2" or stage == "3":
