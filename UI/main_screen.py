@@ -211,7 +211,9 @@ class TimerApp(QMainWindow):
         self.temp_label.setText(
             f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
         )
-        self.temp_label.show()  # We're going to hide this when the session is complete, so we need to show it again
+        self.settings_button.setEnabled(True)
+        self.start_button.setText("Start")
+        self.started = False
 
     def open_settings(self):
         """        self.settings_button.disconnect()
