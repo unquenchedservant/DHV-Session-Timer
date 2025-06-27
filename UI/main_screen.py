@@ -226,6 +226,25 @@ class TimerApp(QMainWindow):
             self.temp_label.setText(
                 f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
             )
+            
+    def handle_time_change(self, temp, stage):
+        temp_type = self.settings.value("temp_type", "F")
+        if stage == "2" or stage == "3":
+            message = f"Temp: {temp}°{temp_type}"
+            title = f"DHV - Stage {stage}"
+            self.temp_label.setText(f"Temp: {temp}°{temp_type}")
+        elif stage == "end":
+            message = "Session Done!"
+            title = "DHV - Done"
+            self.temp_label.setText("Session Done!")
+        self.handle_notification(title, message)
+        self.executor.submit(mixer.music.play)  
+
+    def handle_notification(self, title, message):
+        notif_on = True if self.settings.value('notifications', "True") == "True" else False
+        timeout = int(self.settings.value("timeout", "10"))
+        if notif_on:
+            notification.notify(title=f"{title}", message=f"{message}", timeout=timeout, app_name="DHVSessionTimer")
 
     def update_timer(self):
         """
@@ -247,42 +266,18 @@ class TimerApp(QMainWindow):
         time4 = int(self.settings.value("time4", "10"))
         mixer.init()
         mixer.music.load(self.sound)
-        notif_on = True if self.settings.value('notifications', 'True') == "True" else False
-        timeout = int(self.settings.value('timeout', "10"))
         temp2 = self.settings.value("temp2", "375")
         temp3 = self.settings.value("temp3", "400")
-        temp_type = self.settings.value("temp_type", "F")
         if self.elapsed_time == time2 * DEBUG_TIME:
-            self.temp_label.setText(f"Temp: {temp2}°{temp_type}")
-            if notif_on:
-                notification.notify(
-                    title="DHVSessionTimer Stage 2",
-                    message=f"Temp: {temp2}°{temp_type}",
-                    timeout=timeout,
-                )
-            self.executor.submit(
-                mixer.music.play
-            )  # plays the almighty ding asynchronously
-        elif self.elapsed_time == time3 * 60:
-            self.temp_label.setText(f"Temp: {temp3}°{temp_type}")
-            if notif_on:
-                notification.notify(
-                    "DHVSessionTimer Stage 3",
-                    message=f"Temp: {temp3}°{temp_type}",
-                    timeout=timeout,
-                )
-            self.executor.submit(mixer.music.play)
-        elif self.elapsed_time == time4 * 60:
+            self.handle_time_change(temp2, "2")
+        elif self.elapsed_time == time3 * DEBUG_TIME:
+            self.handle_time_change(temp3, "3")
+        elif self.elapsed_time == time4 * DEBUG_TIME:
             self.temp_label.hide()
-            self.timer_label.setText("Session \nDone!")
+            self.handle_time_change("350", "end")
             self.timer_label.setStyleSheet(
                 "font-size: 38px; color: #9cb9d3; font-weight: bold;"
             )
-            if notif_on:
-                notification.notify(
-                    "DHVSessionTimer Session Done", message=f"", timeout=timeout
-                )
-            self.executor.submit(mixer.music.play)
             self.timer.stop()
             self.settings_button.setEnabled(True)
             self.is_complete = True
