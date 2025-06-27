@@ -3,3 +3,4 @@ build/
 *.pyc
 venv/
 test.py
+.DS_Store
