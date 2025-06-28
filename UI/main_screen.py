@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt, QSettings
 from PyQt6.QtGui import QKeySequence, QShortcut
 from pygame import mixer
-from utilities import resource_path
+from utilities import resource_path, get_ding_resource
 import concurrent.futures
 from sys import platform
 from .settings_screen import SettingsWindow
@@ -37,14 +37,11 @@ class TimerApp(QMainWindow):
         :return: None
         """
         super().__init__()
-        if platform == "linux" or platform == "linux2" or platform == "darwin":
-            resource = "asset/ding.mp3"
-        else:
-            resource = "asset\\ding.mp3"
+        
         self.settings = QSettings(
             "UnquenchedServant", "DHV-Session-Timer"
         )  # initialize settings
-        self.sound = resource_path(resource)  # This is the almighty ding
+        self.sound = resource_path(get_ding_resource())  # This is the almighty ding
         if self.settings.value("keep_active_default", "False") == "True":
             self.keep_on_top = True  # Grab the default keep on top setting
             self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
@@ -56,7 +53,17 @@ class TimerApp(QMainWindow):
         )  # Needed for running the sound asynchronously
         self.started = False
         self.is_complete = False  # Used to check if the session is complete, helps with the start button efficiency
+        self.initVariables()
         self.initUI()
+
+    def initVariables(self):
+        self.temp1 = self.settings.value("temp1", "350")
+        self.temp2 = self.settings.value("temp2", "375")
+        self.temp3 = self.settings.value("temp3", "400")
+        self.time2 = int(self.settings.value("time2", "4"))
+        self.time3 = int(self.settings.value("time3", "8"))
+        self.time4 = int(self.settings.value("time4", "10"))
+        self.temp_type = self.settings.value("temp_unit", "F")
 
     def initUI(self):
         """
@@ -77,10 +84,7 @@ class TimerApp(QMainWindow):
         self.timer_label.setStyleSheet("font-size: 48px; font-weight: bold;")
 
         # the temp label is smaller and gray. Still mighty, but not as mighty.
-        self.temp_label = QLabel(
-            f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}",
-            self,
-        )
+        self.temp_label = QLabel(f"Temp: {self.temp1}°{self.temp_type}", self)
         self.temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.temp_label.setStyleSheet("font-size: 12px; color: gray;")
 
@@ -166,8 +170,6 @@ class TimerApp(QMainWindow):
         :return: None
         """
         if self.timer.isActive():
-            self.settings_button.setEnabled(True)
-            self.start_button.setText("Start")
             self.reset_timer()
         else:
             self.start_timer()
@@ -183,16 +185,12 @@ class TimerApp(QMainWindow):
         """
         if self.started:
             self.reset_timer()
-            self.is_complete = False
-            self.started = False
-            self.settings_button.setEnabled(True)
-            self.start_button.setText("Start")
         else:
-            self.started = True
-            self.start_button.setText("Stop/Reset")
             if self.is_complete:  # Our friend is_complete is here!
                 self.is_complete = False  # No longer is_complete
                 self.reset_timer()  # reset everything, just in case (if the user hits start after the session ends to start a new one)
+            self.started = True
+            self.start_button.setText("Stop/Reset")
             self.settings_button.setEnabled(False)
             self.timer.start(1000)  # 1000 ms = 1 second
 
@@ -204,16 +202,11 @@ class TimerApp(QMainWindow):
 
         :return: None
         """
-        self.timer.stop()
+        self.stop_timer(finished=False)
         self.elapsed_time = 0
         self.timer_label.setText("0:00")
         self.timer_label.setStyleSheet("font-size: 48px; font-weight: bold;")
-        self.temp_label.setText(
-            f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
-        )
-        self.settings_button.setEnabled(True)
-        self.start_button.setText("Start")
-        self.started = False
+        self.temp_label.setText(f"Temp: {self.temp1}°{self.temp_type}")
 
     def open_settings(self):
         """        self.settings_button.disconnect()
@@ -226,15 +219,14 @@ class TimerApp(QMainWindow):
         if settings_window.exec():
             # Updates the temp label to reflect the new temp settings
             self.temp_label.setText(
-                f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
+                f"Temp: {self.temp1}°{self.temp_type}"
             )
 
     def handle_time_change(self, temp, stage):
-        temp_type = self.settings.value("temp_type", "F")
         if stage == "2" or stage == "3":
-            message = f"Temp: {temp}°{temp_type}"
+            message = f"Temp: {temp}°{self.temp_type}"
             title = f"DHV - Stage {stage}"
-            self.temp_label.setText(f"Temp: {temp}°{temp_type}")
+            self.temp_label.setText(f"Temp: {temp}°{self.temp_type}")
         elif stage == "end":
             message = "Session Done!"
             title = "DHV - Done"
@@ -244,9 +236,28 @@ class TimerApp(QMainWindow):
 
     def handle_notification(self, title, message):
         notif_on = True if self.settings.value('notifications', "True") == "True" else False
-        timeout = int(self.settings.value("timeout", "10"))
+        timeout = int(self.settings.value("timeout", "10")) if not platform == "darwin" else 0
         if notif_on:
             notification.notify(title=f"{title}", message=f"{message}", timeout=timeout, app_name="DHVSessionTimer")
+
+    def init_sound(self):
+        mixer.init()
+        mixer.music.load(self.sound)
+
+    def handle_timer_label(self):
+        minutes = self.elapsed_time // 60
+        seconds = self.elapsed_time % 60
+        self.timer_label.setText(f"{minutes}:{seconds:02}")
+
+    def stop_timer(self, finished=False):
+        self.timer.stop()
+        self.started = False
+        self.start_button.setText("Start")
+        self.settings_button.setEnabled(True)
+        self.is_complete = finished
+        if finished:
+            self.timer_label.setText("Done!")
+            self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
 
     def update_timer(self):
         """
@@ -260,27 +271,13 @@ class TimerApp(QMainWindow):
         :return: None
         """
         self.elapsed_time += 1
-        minutes = self.elapsed_time // 60
-        seconds = self.elapsed_time % 60
-        self.timer_label.setText(f"{minutes}:{seconds:02}")
-        time2 = int(self.settings.value("time2", "6"))
-        time3 = int(self.settings.value("time3", "8"))
-        time4 = int(self.settings.value("time4", "10"))
-        mixer.init()
-        mixer.music.load(self.sound)
-        temp2 = self.settings.value("temp2", "375")
-        temp3 = self.settings.value("temp3", "400")
-        if self.elapsed_time == time2 * DEBUG_TIME:
-            self.handle_time_change(temp2, "2")
-        elif self.elapsed_time == time3 * DEBUG_TIME:
-            self.handle_time_change(temp3, "3")
-        elif self.elapsed_time == time4 * DEBUG_TIME:
+        self.handle_timer_label()
+        self.init_sound()
+        
+        if self.elapsed_time == self.time2 * DEBUG_TIME:
+            self.handle_time_change(self.temp2, "2")
+        elif self.elapsed_time == self.time3 * DEBUG_TIME:
+            self.handle_time_change(self.temp3, "3")
+        elif self.elapsed_time == self.time4 * DEBUG_TIME:
             self.handle_time_change("350", "end")
-            self.timer_label.setStyleSheet(
-                "font-size: 38px; color: #9cb9d3; font-weight: bold;"
-            )
-            self.timer.stop()
-            self.started = False
-            self.start_button.setText("Start")
-            self.settings_button.setEnabled(True)
-            self.is_complete = True
+            self.stop_timer(finished=True)
