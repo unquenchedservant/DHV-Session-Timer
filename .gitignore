@@ -4,3 +4,5 @@ build/
 venv/
 test.py
 .DS_Store
+dist/DHVSessionTimer.app/
+dist/dmg/
