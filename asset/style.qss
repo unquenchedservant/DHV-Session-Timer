@@ -3,6 +3,11 @@ QPushButton {
     color: #9cb9d3;
 }
 
+QPushButton::disabled {
+    background-color: #121212;
+    color: #383838
+}
+
 QMainWindow {
     background-color: #121212;
 }

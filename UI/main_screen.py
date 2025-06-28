@@ -22,7 +22,7 @@ from .settings_screen import SettingsWindow
 from plyer import notification
 
 
-DEBUG_TIME = 60
+DEBUG_TIME = 60 # Prod - 60
 
 
 class TimerApp(QMainWindow):
@@ -211,7 +211,9 @@ class TimerApp(QMainWindow):
         self.temp_label.setText(
             f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
         )
-        self.temp_label.show()  # We're going to hide this when the session is complete, so we need to show it again
+        self.settings_button.setEnabled(True)
+        self.start_button.setText("Start")
+        self.started = False
 
     def open_settings(self):
         """        self.settings_button.disconnect()
@@ -226,7 +228,7 @@ class TimerApp(QMainWindow):
             self.temp_label.setText(
                 f"Temp: {self.settings.value('temp1', '350')}°{self.settings.value('temp_type', 'F')}"
             )
-            
+
     def handle_time_change(self, temp, stage):
         temp_type = self.settings.value("temp_type", "F")
         if stage == "2" or stage == "3":
@@ -273,11 +275,12 @@ class TimerApp(QMainWindow):
         elif self.elapsed_time == time3 * DEBUG_TIME:
             self.handle_time_change(temp3, "3")
         elif self.elapsed_time == time4 * DEBUG_TIME:
-            self.temp_label.hide()
             self.handle_time_change("350", "end")
             self.timer_label.setStyleSheet(
                 "font-size: 38px; color: #9cb9d3; font-weight: bold;"
             )
             self.timer.stop()
+            self.started = False
+            self.start_button.setText("Start")
             self.settings_button.setEnabled(True)
             self.is_complete = True
