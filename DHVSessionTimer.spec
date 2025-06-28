@@ -5,8 +5,8 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('asset/ding.mp3', 'asset'), ('asset/style.qss', 'asset')],
-    hiddenimports=['plyer.platforms.win.notification', 'plyer.platforms.linux.notification', 'dbus-python'],
+    datas=[('asset/', 'asset/')],
+    hiddenimports=['plyer.platforms.win.notificaion', 'plyer.platforms.macosx.notification', 'plyer.platforms.linux.notification', 'dbus-python'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -35,4 +35,10 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+)
+app = BUNDLE(
+    exe,
+    name='DHVSessionTimer.app',
+    icon=None,
+    bundle_identifier=None,
 )
