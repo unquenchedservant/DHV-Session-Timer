@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialo
 from PyQt6.QtGui import QIntValidator
 from PyQt6 import QtCore
 import math
+from sys import platform
 
 class SettingsWindow(QDialog):
     """
@@ -100,11 +101,12 @@ class SettingsWindow(QDialog):
         self.time4_input.setCurrentText(self.settings.value('time4', '10'))
         time_layout.addRow('End Time (min):', self.time4_input)
 
-        self.notification_timeout = QLineEdit(self)
-        self.notification_timeout.setValidator(onlyInt)
-        self.notification_timeout.setText(self.settings.value('timeout', '10'))
-        self.notification_timeout.setFixedWidth(40)
-        time_layout.addRow('Notif. Timeout:', self.notification_timeout)
+        if not platform == "darwin":
+            self.notification_timeout = QLineEdit(self)
+            self.notification_timeout.setValidator(onlyInt)
+            self.notification_timeout.setText(self.settings.value('timeout', '10'))
+            self.notification_timeout.setFixedWidth(40)
+            time_layout.addRow('Notif. Timeout:', self.notification_timeout)
 
         time_widget = QWidget() # spacing again
         time_widget.setLayout(time_layout)
@@ -206,8 +208,9 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
-        self.notification_timeout_input.setText("10")
-        self.notifications_slider.setChecked(True)
+        if not platform == "darwin":
+            self.notification_timeout.setText("10")
+        self.notifications_checkbox.setChecked(True)
         self.keep_active_default_slider.setChecked(False)
         # You got 'em
 
@@ -251,7 +254,9 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time2', str(time2))
         self.settings.setValue('time3', str(time3))
         self.settings.setValue('time4', str(time4))
-        self.settings.setValue('timeout', self.notification_timeout.text())
+        if not platform == "darwin":
+            self.settings.setValue('timeout', self.notification_timeout.text())
+        self.settings.setValue("notifications", notifchecked) # Save the notification settin
         #self.settings.setValue('notifications', notifchecked)
         self.settings.setValue("temp_type", unit)
         self.settings.setValue('keep_active_default', str(self.keep_active_default_slider.isChecked()))
