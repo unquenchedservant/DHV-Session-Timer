@@ -189,11 +189,11 @@ class TimerApp(QMainWindow):
             self.start_button.setText("Start")
         else:
             self.started = True
-            self.settings_button.setEnabled(False)
             self.start_button.setText("Stop/Reset")
             if self.is_complete:  # Our friend is_complete is here!
                 self.is_complete = False  # No longer is_complete
                 self.reset_timer()  # reset everything, just in case (if the user hits start after the session ends to start a new one)
+            self.settings_button.setEnabled(False)
             self.timer.start(1000)  # 1000 ms = 1 second
 
     def reset_timer(self):
