@@ -36,7 +36,7 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 
 
 ## Defaults
-only changeable items listed
+only changeable items listed. Pressing "Reset" in the settings menu should reset all listed variables to the corresponding value in the below table.
 
 |Setting Name|Variable Name|Value|
 |---|---|---|
