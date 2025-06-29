@@ -57,7 +57,9 @@ only changeable items listed. Pressing "Reset" in the settings menu should reset
 
 # Build
 PyInstaller is the builder of choice, use `python3 -m PyInstaller DHVSessionTimer.spec` to build
+
 Some handy build scripts have been provided, two for linux (one just builds, the other builds and runs) and one for Mac. These run PyInstaller on your behalf
+
 Windows building isn't necessary, as we have a GitHub Action set up to build a Windows artifact. 
 
 ## Notes
