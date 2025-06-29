@@ -22,7 +22,7 @@ from .settings_screen import SettingsWindow
 from plyer import notification
 
 
-DEBUG_TIME = 60 # Prod - 60
+DEBUG_TIME = 1 # Prod - 60
 
 
 class TimerApp(QMainWindow):
@@ -232,7 +232,8 @@ class TimerApp(QMainWindow):
             title = "DHV - Done"
             self.temp_label.setText("Session Done!")
         self.handle_notification(title, message)
-        self.executor.submit(mixer.music.play)  
+        if self.settings.value('almightyDing', 'True') == "True":
+            self.executor.submit(mixer.music.play)  
 
     def handle_notification(self, title, message):
         notif_on = True if self.settings.value('notifications', "True") == "True" else False

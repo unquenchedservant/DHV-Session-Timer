@@ -25,7 +25,8 @@ class SettingsWindow(QDialog):
         else:
             self.keep_active = False
 
-        self.notifications = True if self.settings.value('notifications', 'True') == "True" else False
+        self.notifications = self.settings.value('notifications', 'True') == "True"
+        self.almightyDing = self.settings.value('almightyDing', 'True') == "True"
         self.initUI()
         
     def initUI(self):
@@ -71,6 +72,7 @@ class SettingsWindow(QDialog):
         self.notifications_checkbox.setChecked(self.notifications)
         self.notifications_checkbox.stateChanged.connect(self.handle_notifications)
         temp_layout.addRow("Notifications:", self.notifications_checkbox)
+        
 
 
         # Create a widget to hold the temp layout, used for spacing
@@ -107,6 +109,11 @@ class SettingsWindow(QDialog):
             self.notification_timeout.setText(self.settings.value('timeout', '10'))
             self.notification_timeout.setFixedWidth(40)
             time_layout.addRow('Notif. Timeout:', self.notification_timeout)
+
+        self.almighty_ding_checkbox = QCheckBox(self)
+        self.almighty_ding_checkbox.setChecked(self.almightyDing)
+        self.almighty_ding_checkbox.stateChanged.connect(self.handle_almighty_ding)
+        time_layout.addRow('Ding:', self.almighty_ding_checkbox)
 
         time_widget = QWidget() # spacing again
         time_widget.setLayout(time_layout)
@@ -156,6 +163,9 @@ class SettingsWindow(QDialog):
     def handle_notifications(self):
         self.settings.setValue('notifications', f"{self.notifications_checkbox.isChecked()}")
 
+    def handle_almighty_ding(self):
+        self.settings.setValue('almightyDing', f"{self.almighty_ding_checkbox.isChecked()}")
+
     # Allows for the settings window to be closed with the X button, and still save the settings
     def closeEvent(self, event):
         """
@@ -201,6 +211,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue("notifications", "True")
         self.settings.setValue('keep_active_default', "False")
         self.settings.setValue("timeout", "10")
+        self.settings.setValue('almightyDing', "True")
         self.temp1_input.setText('350')
         self.temp2_input.setText('375')
         self.temp3_input.setText('400')
@@ -208,8 +219,7 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
-        if not platform == "darwin":
-            self.notification_timeout.setText("10")
+        self.notification_timeout.setText("10")
         self.notifications_checkbox.setChecked(True)
         self.keep_active_default_slider.setChecked(False)
         # You got 'em
@@ -248,6 +258,7 @@ class SettingsWindow(QDialog):
         # If we get here, the user didn't mess this up. 
         # but now we gotta convert them all back to strings :D
         notifchecked = "True" if self.notifications_checkbox.isChecked() else "False"
+        dingChecked = "True" if self.almighty_ding_checkbox.isChecked() else "False"
         self.settings.setValue('temp1', str(temp1))
         self.settings.setValue('temp2', str(temp2))
         self.settings.setValue('temp3', str(temp3))
@@ -256,6 +267,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time4', str(time4))
         if not platform == "darwin":
             self.settings.setValue('timeout', self.notification_timeout.text())
+        self.settings.setValue("almightyDing", dingChecked) # Save the almighty ding status
         self.settings.setValue("notifications", notifchecked) # Save the notification settin
         #self.settings.setValue('notifications', notifchecked)
         self.settings.setValue("temp_type", unit)
