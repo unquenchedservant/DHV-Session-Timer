@@ -5,17 +5,19 @@ This is built using the Solo 3 in mind, and so time and temperature limits are b
 
 Assuming default settings, at 6 minutes a ding will sound and a notification will display saying you're on stage 2 and what temperature you should be at, the timer will show 350F.  
 
-## Installation
+# Installation
 Should work on most versions of Python 3, but was built with Python 3.13
 
 In your virtual environment, run `pip3 install requirements.txt`
 
 Once installed, you should be able to run the python file. 
 
-## Features
+For build instructions see [Build](https://github.com/unquenchedservant/DHV-Session-Timer/readme.md#Build)
+
+# Features
 The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo line also benefits from this method. 
 
-## Screenshots
+# Screenshots
 (current screenshots are taken on a tiled Linux and may not accurately reflect default experience)
 
 - Main timer page
@@ -35,7 +37,7 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 ![image](https://github.com/user-attachments/assets/753a2d6f-2d59-4bb1-b1b0-50811740d324)
 
 
-## Defaults
+# Defaults
 only changeable items listed. Pressing "Reset" in the settings menu should reset all listed variables to the corresponding value in the below table.
 
 |Setting Name|Variable Name|Value|
@@ -52,6 +54,11 @@ only changeable items listed. Pressing "Reset" in the settings menu should reset
 | Notif. Timeout | timeout | 10 |
 | Ding | almightyDing | True |
 | Keep Win on Top by Default | keep_active_default | False |
+
+# Build
+PyInstaller is the builder of choice, use `python3 -m PyInstaller DHVSessionTimer.spec` to build
+Some handy build scripts have been provided, two for linux (one just builds, the other builds and runs) and one for Mac. These run PyInstaller on your behalf
+Windows building isn't necessary, as we have a GitHub Action set up to build a Windows artifact. 
 
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
