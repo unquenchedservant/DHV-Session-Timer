@@ -25,19 +25,19 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 ### Temp
 Temperature defaults to Fahrenheit
 
-Start temp: 350 
-2nd temp:   375
-3rd temp:   400
+- Start temp: 350 
+- 2nd temp:   375
+- 3rd temp:   400
 
-Notifications: True
+- Notifications: True
 
 ### Time
 
-1st adjustment:  6 minutes
-2nd adjustment:  8 minutes
-Session end:    10 minutes
-Timeout:        10 seconds
-Ding:           True
+- 1st adjustment:  6 minutes
+- 2nd adjustment:  8 minutes
+- Session end:    10 minutes
+- Timeout:        10 seconds (Setting won't show on Mac)
+- Ding:           True
 
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
