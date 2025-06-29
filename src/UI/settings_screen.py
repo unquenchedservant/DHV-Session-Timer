@@ -20,11 +20,7 @@ class SettingsWindow(QDialog):
         """
         super().__init__()
         self.settings = settings
-        if self.settings.value('keep_active_default', "False") == "True":
-            self.keep_active = True
-        else:
-            self.keep_active = False
-
+        self.keep_active = self.settings.value('keep_active_default', "False") == "True"
         self.notifications = self.settings.value('notifications', 'True') == "True"
         self.almightyDing = self.settings.value('almightyDing', 'True') == "True"
         self.initUI()
@@ -257,8 +253,9 @@ class SettingsWindow(QDialog):
                 return
         # If we get here, the user didn't mess this up. 
         # but now we gotta convert them all back to strings :D
-        notifchecked = "True" if self.notifications_checkbox.isChecked() else "False"
-        dingChecked = "True" if self.almighty_ding_checkbox.isChecked() else "False"
+        notifchecked = str(self.notifications_checkbox.isChecked())
+        dingChecked = str(self.almighty_ding_checkbox.isChecked())
+        keepActive = str(self.keep_active_default_slider.isChecked())
         self.settings.setValue('temp1', str(temp1))
         self.settings.setValue('temp2', str(temp2))
         self.settings.setValue('temp3', str(temp3))
@@ -271,5 +268,5 @@ class SettingsWindow(QDialog):
         self.settings.setValue("notifications", notifchecked) # Save the notification settin
         #self.settings.setValue('notifications', notifchecked)
         self.settings.setValue("temp_type", unit)
-        self.settings.setValue('keep_active_default', str(self.keep_active_default_slider.isChecked()))
+        self.settings.setValue('keep_active_default', keepActive)
         self.accept() # Save them settings!
