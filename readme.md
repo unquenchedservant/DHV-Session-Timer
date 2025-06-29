@@ -12,7 +12,7 @@ In your virtual environment, run `pip3 install requirements.txt`
 
 Once installed, you should be able to run the python file. 
 
-For build instructions see [Build](https://github.com/unquenchedservant/DHV-Session-Timer/readme.md#Build)
+For build instructions see [Build](#Build)
 
 # Features
 The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo line also benefits from this method. 
