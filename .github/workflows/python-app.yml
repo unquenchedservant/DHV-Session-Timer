@@ -20,8 +20,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Package app for windows
-    - uses: JackMcKew/pyinstaller-action-windows@main
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: src
     
