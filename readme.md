@@ -19,7 +19,9 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 (current screenshots are taken on a tiled Linux and may not accurately reflect default experience)
 
 ![image](https://github.com/user-attachments/assets/03ff3a2c-3ea2-4308-b499-f0b6bfb972e4)
-![image](https://github.com/user-attachments/assets/24880cf2-b80b-4040-a0ce-ed180e5c86f0)
+
+![image](https://github.com/user-attachments/assets/c28e4d2c-96de-4b8d-8044-55a6c70040a8)
+
 ![image](https://github.com/user-attachments/assets/464abdf5-e973-44b9-9763-ce6f979ea416)
 
 ## Defaults
