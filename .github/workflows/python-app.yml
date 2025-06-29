@@ -29,3 +29,4 @@ jobs:
       with:
         name: DHVSessionTimer
         path: src/dist/windows
+        if-no-file-found: error
