@@ -39,7 +39,7 @@ Timeout:        10 seconds
 Ding:           True
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
-- The way the mac app handles notifications is slightly different, but still _technically_ uses the plyer library, it's just modified. See notification.py in the root directory for more information
+- The way the mac app handles notifications is slightly different, but still _technically_ uses the plyer library, it's just modified. See [notification.py](https://github.com/unquenchedservant/DHV-Session-Timer/blob/main/notification.py) in the root directory for more information
 - Mac notifications give a sound by default, but you may or may not want the ding sound in addition, hence the ding sound is a toggle.
 - Mac notifications (currently) don't have a proper timeout function. I'm looking in to this. 
 
