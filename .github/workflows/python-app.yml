@@ -27,5 +27,5 @@ jobs:
     
     - uses: actions/upload-artifact@v4
       with:
-        name: DHVSessionTimer.exe
-        path: src/dist/
+        name: DHVSessionTimer
+        path: src/dist/windows
