@@ -18,11 +18,22 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 ## Screenshots
 (current screenshots are taken on a tiled Linux and may not accurately reflect default experience)
 
+- Main timer page
+
 ![image](https://github.com/user-attachments/assets/03ff3a2c-3ea2-4308-b499-f0b6bfb972e4)
+
+- Settings screen
 
 ![image](https://github.com/user-attachments/assets/c28e4d2c-96de-4b8d-8044-55a6c70040a8)
 
+- Example notification (on linux using swaync)
+
 ![image](https://github.com/user-attachments/assets/464abdf5-e973-44b9-9763-ce6f979ea416)
+
+- Notification grouping (confirmed on Linux, will look different on other platforms)
+
+![image](https://github.com/user-attachments/assets/753a2d6f-2d59-4bb1-b1b0-50811740d324)
+
 
 ## Defaults
 only changeable items listed
@@ -41,6 +52,7 @@ only changeable items listed
 | Notif. Timeout | timeout | 10 |
 | Ding | almightyDing | True |
 | Keep Win on Top by Default | keep_active_default | False |
+
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
 - The way the mac app handles notifications is slightly different, but still _technically_ uses the plyer library, it's just modified. See [notification.py](https://github.com/unquenchedservant/DHV-Session-Timer/blob/main/notification.py) in the root directory for more information
