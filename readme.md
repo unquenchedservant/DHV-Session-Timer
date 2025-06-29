@@ -22,23 +22,22 @@ The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo
 ![image](https://github.com/user-attachments/assets/464abdf5-e973-44b9-9763-ce6f979ea416)
 
 ## Defaults
-### Temp
-Temperature defaults to Fahrenheit
+only changeable items listed
 
-- Start temp: 350 
-- 2nd temp:   375
-- 3rd temp:   400
-
-- Notifications: True
-
-### Time
-
-- 1st adjustment:  6 minutes
-- 2nd adjustment:  8 minutes
-- Session end:    10 minutes
-- Timeout:        10 seconds (Setting won't show on Mac)
-- Ding:           True
-
+|Setting Name|Variable Name|Value|
+|---|---|---|
+| Temp Unit | temp_type | "F" |
+| Temp 1 | temp1 | 350 |
+| Temp 2 | temp2 | 375 |
+| Temp 3 | temp3 | 400 |
+| Temp Unit | temp_type | "F" |
+| Notifications | notifications | True |
+| Stg. 2 Time (min) | time2 | 6 |
+| Stg. 3 Time (min) | time3 | 8 | 
+| End Time (min) | time4 | 10 |
+| Notif. Timeout | timeout | 10 |
+| Ding | almightyDing | True |
+| Keep Win on Top by Default | keep_active_default | False |
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
 - The way the mac app handles notifications is slightly different, but still _technically_ uses the plyer library, it's just modified. See [notification.py](https://github.com/unquenchedservant/DHV-Session-Timer/blob/main/notification.py) in the root directory for more information

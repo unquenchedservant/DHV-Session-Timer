@@ -86,17 +86,17 @@ class SettingsWindow(QDialog):
         self.time1_input = QComboBox(self) # Time 1 will always be 0 seconds, so it's disabled and perma-set to 0
         self.time1_input.addItem("0") 
         self.time1_input.setEnabled(False) 
-        time_layout.addRow('Time (min)', self.time1_input)
+        time_layout.addRow('Start Time (min)', self.time1_input)
         
         self.time2_input = QComboBox(self)
         self.time2_input.addItems([str(i) for i in range(1,25)]) # Time 2-3 can be 1-25 minutes
         self.time2_input.setCurrentText(self.settings.value('time2', '6')) 
-        time_layout.addRow('Time (min):', self.time2_input)
+        time_layout.addRow('Stg. 2 Time (min):', self.time2_input)
         
         self.time3_input = QComboBox(self)
         self.time3_input.addItems([str(i) for i in range(1,25)])
         self.time3_input.setCurrentText(self.settings.value('time3', '8'))
-        time_layout.addRow('Time (min):', self.time3_input)
+        time_layout.addRow('Stg. 3 Time (min):', self.time3_input)
 
         self.time4_input = QComboBox(self)
         self.time4_input.addItems([str(i) for i in range(8,25)]) #Since 8 minutes is the lower limit for the auto-shutoff on the Solo 3, this will do
@@ -204,7 +204,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('temp1', '350')
         self.settings.setValue('temp2', '375')
         self.settings.setValue('temp3', '400')
-        self.settings.setValue('temp_unit', 'F')
+        self.settings.setValue('temp_type', 'F')
         self.settings.setValue('time2', '6')
         self.settings.setValue('time3', '8')
         self.settings.setValue('time4', '10')
