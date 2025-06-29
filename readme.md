@@ -32,11 +32,13 @@ Start temp: 350
 Notifications: True
 
 ### Time
+
 1st adjustment:  6 minutes
 2nd adjustment:  8 minutes
 Session end:    10 minutes
 Timeout:        10 seconds
 Ding:           True
+
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
 - The way the mac app handles notifications is slightly different, but still _technically_ uses the plyer library, it's just modified. See [notification.py](https://github.com/unquenchedservant/DHV-Session-Timer/blob/main/notification.py) in the root directory for more information
