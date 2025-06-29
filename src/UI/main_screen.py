@@ -22,7 +22,7 @@ from .settings_screen import SettingsWindow
 from plyer import notification
 
 
-DEBUG_TIME = 60 # Prod - 60
+DEBUG_TIME = 1 # Prod - 60
 
 
 class TimerApp(QMainWindow):

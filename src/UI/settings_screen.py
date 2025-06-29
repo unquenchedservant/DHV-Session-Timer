@@ -113,7 +113,7 @@ class SettingsWindow(QDialog):
         self.almighty_ding_checkbox = QCheckBox(self)
         self.almighty_ding_checkbox.setChecked(self.almightyDing)
         self.almighty_ding_checkbox.stateChanged.connect(self.handle_almighty_ding)
-        time_layout.addRow('Ding:', self.dingChecked)
+        time_layout.addRow('Ding:', self.almighty_ding_checkbox)
 
         time_widget = QWidget() # spacing again
         time_widget.setLayout(time_layout)
@@ -258,7 +258,7 @@ class SettingsWindow(QDialog):
         # If we get here, the user didn't mess this up. 
         # but now we gotta convert them all back to strings :D
         notifchecked = "True" if self.notifications_checkbox.isChecked() else "False"
-        dingChecked = "True" if self.ding_checkbox.isChecked() else "False"
+        dingChecked = "True" if self.almighty_ding_checkbox.isChecked() else "False"
         self.settings.setValue('temp1', str(temp1))
         self.settings.setValue('temp2', str(temp2))
         self.settings.setValue('temp3', str(temp3))
