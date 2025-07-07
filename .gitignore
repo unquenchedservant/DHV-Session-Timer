@@ -8,3 +8,5 @@ dist/DHVSessionTimer.app/
 src/dist/DHVSessionTimer.app/
 src/dist/dmg/
 dist/dmg/
+
+copilot.py
