@@ -9,17 +9,24 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from utilities import resource_path
 from UI.main_screen import TimerApp
+from UI.update_screen import UpdateApp
+import requests
 
+APP_VERSION = "v1.04"
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv)    
+    app.setStyle('Fusion')
     if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
         resource = "asset/style.qss"
     else:
         resource = "asset\\style.qss"
     with open (resource_path(resource), "r") as f:
         app.setStyleSheet(f.read())
-    app.setStyle('Fusion')
-    ex = TimerApp()
-    ex.show()
+    response = requests.get("https://api.github.com/repos/unquenchedservant/DHV-Session-Timer/releases/latest")
+    if response.json()["name"] != APP_VERSION:
+        ex = UpdateApp()
+    else:
+        ex = TimerApp()
+    ex.show() 
     sys.exit(app.exec())
