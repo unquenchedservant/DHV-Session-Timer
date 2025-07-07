@@ -82,6 +82,7 @@ class TimerApp(QMainWindow):
         self.timer_label = QLabel("0:00", self)
         self.timer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.timer_label.setStyleSheet("font-size: 48px; font-weight: bold;")
+        self.timer_label.mousePressEvent = self.handle_timer_click
 
         # the temp label is smaller and gray. Still mighty, but not as mighty.
         self.temp_label = QLabel(f"Temp: {self.temp1}°{self.temp_type}", self)
@@ -174,6 +175,13 @@ class TimerApp(QMainWindow):
         else:
             self.start_timer()
 
+    def handle_timer_click(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.start_timer()
+        elif event.button() == Qt.MouseButton.RightButton:
+            self.settings.setValue("inverted_time", "True" if self.settings.value("inverted_time", "False") == "False" else "False")
+            self.handle_timer_label()
+
     def start_timer(self):
         """
         This is done for efficiency sake.
@@ -246,9 +254,16 @@ class TimerApp(QMainWindow):
         mixer.music.load(self.sound)
 
     def handle_timer_label(self):
-        minutes = self.elapsed_time // 60
-        seconds = self.elapsed_time % 60
-        self.timer_label.setText(f"{minutes}:{seconds:02}")
+        if self.settings.value("inverted_time", "False") == "False":
+            minutes = self.elapsed_time // 60
+            seconds = self.elapsed_time % 60
+            self.timer_label.setText(f"{minutes}:{seconds:02}")
+        else:
+            remaining = (self.time4 * DEBUG_TIME) - self.elapsed_time
+            minutes = remaining // 60
+            seconds = remaining % 60
+            self.timer_label.setText(f"-{minutes}:{seconds:02}")
+
 
     def stop_timer(self, finished=False):
         self.timer.stop()
