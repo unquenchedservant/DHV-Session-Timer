@@ -20,9 +20,9 @@ class SettingsWindow(QDialog):
         """
         super().__init__()
         self.settings = settings
-        self.keep_active = self.settings.value('keep_active_default', "False") == "True"
-        self.notifications = self.settings.value('notifications', 'True') == "True"
-        self.almightyDing = self.settings.value('almightyDing', 'True') == "True"
+        self.keep_active = self.settings.value('keep_active_default', False, type=bool)
+        self.notifications = self.settings.value('notifications', True, type=bool)
+        self.almightyDing = self.settings.value('almightyDing', True, type=bool)
         self.initUI()
         
     def initUI(self):
@@ -68,7 +68,11 @@ class SettingsWindow(QDialog):
         self.notifications_checkbox.setChecked(self.notifications)
         self.notifications_checkbox.stateChanged.connect(self.handle_notifications)
         temp_layout.addRow("Notifications:", self.notifications_checkbox)
-        
+
+        self.skip_all_updates_checkbox = QCheckBox(self)
+        self.skip_all_updates_checkbox.setChecked(not self.settings.value("skip_all_updates", False, type=bool))
+        self.skip_all_updates_checkbox.stateChanged.connect(lambda: self.settings.setValue("skip_all_updates", not self.skip_all_updates_checkbox.isChecked()))
+        temp_layout.addRow("Update Alerts:", self.skip_all_updates_checkbox)
 
 
         # Create a widget to hold the temp layout, used for spacing
