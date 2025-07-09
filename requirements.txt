@@ -2,3 +2,4 @@ plyer==2.1.0
 pygame==2.6.1
 PyQt6==6.9.1
 pyqt6_sip==13.10.2
+requests==2.32.4
