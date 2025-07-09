@@ -21,7 +21,12 @@ if __name__ == '__main__':
     settings = QSettings(
             "UnquenchedServant", "DHV-Session-Timer"
         )
-    
+    # Initialize mouse click actions, as logic doesn't really allow for this later.
+    if settings.value("mouse_initialized", defaultValue=False, type=bool) is False:
+        settings.setValue("mouse_initialized", True)
+        settings.setValue("left_mouse_action", "Invert Time")
+        settings.setValue("middle_mouse_action", "Do Nothing")
+        settings.setValue("right_mouse_action", "Start Timer")
     if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
         resource = "asset/style.qss"
     else:
