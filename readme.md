@@ -6,13 +6,14 @@ This is built using the Solo 3 in mind, and so time and temperature limits are b
 Assuming default settings, at 6 minutes a ding will sound and a notification will display saying you're on stage 2 and what temperature you should be at, the timer will show 350F.  
 
 # Installation
-Should work on most versions of Python 3, but was built with Python 3.13
 
-In your virtual environment, run `pip3 install requirements.txt`
+Head over to the [Releases](https://github.com/unquenchedservant/DHV-Session-Timer/releases/latest) page and download the file for your system (Windows: "DHVSessionTimer.exe", Mac: "DHVSessionTimer.dmg", linux: "DHVSessionTimer") 
 
-Once installed, you should be able to run the python file. 
+For linux, I recommend putting the file in /usr/bin
 
-For build instructions see [Build](#Build)
+Mac will have an installer to put the app in your Applications folder 
+
+Windows you can put the .exe wherever you feel like. 
 
 # Features
 The best way to use a dry herb vaporizer is to slowly ramp up the heat. The Solo line also benefits from this method. 
@@ -56,11 +57,17 @@ only changeable items listed. Pressing "Reset" in the settings menu should reset
 | Keep Win on Top by Default | keep_active_default | False |
 
 # Build
+Should work on most versions of Python 3, but was built with Python 3.13
+
+In your virtual environment, run `pip3 install requirements.txt`
+
+Once installed, you should be able to run the python file. 
+
 PyInstaller is the builder of choice, use `python3 -m PyInstaller DHVSessionTimer.spec` to build
 
 Some handy build scripts have been provided, two for linux (one just builds, the other builds and runs) and one for Mac. These run PyInstaller on your behalf
 
-Windows building isn't necessary, as we have a GitHub Action set up to build a Windows artifact. 
+Windows building isn't necessary, as we have a GitHub Action set up to build a Windows artifact. I will grab this and update the release section with the executable.
 
 ## Notes
 - For some reason the Mac version takes forever to open, this may be because I was using iOS 26 which at the time is in early beta.
