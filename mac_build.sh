@@ -5,7 +5,7 @@ rm -rf "$SCRIPT_DIR/src/dist/dmg"
 rm -rf "$SCRIPT_DIR/src/dist/DHVSessionTimer.app"
 rm  "$SCRIPT_DIR/src/dist/DHVSessionTimer.dmg"
 cd "$SCRIPT_DIR"
-source venv/bin/activate
+source .venv/bin/activate
 cd "$SCRIPT_DIR/src"
 python3 -m PyInstaller DHVSessionTimer.spec
 cd "$SCRIPT_DIR/src/dist"
