@@ -3,7 +3,6 @@ Handles all settings window UI and logic
 """
 from PyQt6.QtWidgets import QComboBox, QLineEdit, QCheckBox, QFormLayout, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtGui import QIntValidator
-from PyQt6 import QtCore
 import math
 from sys import platform
 
@@ -20,9 +19,9 @@ class SettingsWindow(QDialog):
         """
         super().__init__()
         self.settings = settings
-        self.keep_active = self.settings.value('keep_active_default', "False") == "True"
-        self.notifications = self.settings.value('notifications', 'True') == "True"
-        self.almightyDing = self.settings.value('almightyDing', 'True') == "True"
+        self.keep_active = self.settings.value('keep_active_default', False, type=bool)
+        self.notifications = self.settings.value('notifications', True, type=bool)
+        self.almightyDing = self.settings.value('almightyDing', True, type=bool)
         self.initUI()
         
     def initUI(self):
@@ -68,7 +67,11 @@ class SettingsWindow(QDialog):
         self.notifications_checkbox.setChecked(self.notifications)
         self.notifications_checkbox.stateChanged.connect(self.handle_notifications)
         temp_layout.addRow("Notifications:", self.notifications_checkbox)
-        
+
+        self.skip_all_updates_checkbox = QCheckBox(self)
+        self.skip_all_updates_checkbox.setChecked(not self.settings.value("skip_all_updates", False, type=bool))
+        self.skip_all_updates_checkbox.stateChanged.connect(lambda: self.settings.setValue("skip_all_updates", not self.skip_all_updates_checkbox.isChecked()))
+        temp_layout.addRow("Update Alerts:", self.skip_all_updates_checkbox)
 
 
         # Create a widget to hold the temp layout, used for spacing
@@ -110,6 +113,27 @@ class SettingsWindow(QDialog):
         self.almighty_ding_checkbox.setChecked(self.almightyDing)
         self.almighty_ding_checkbox.stateChanged.connect(self.handle_almighty_ding)
         time_layout.addRow('Ding:', self.almighty_ding_checkbox)
+
+        self.left_mouse_combo = QComboBox(self)
+        self.left_mouse_combo.addItems(['Start Timer', 'Invert Time', 'Do Nothing'])
+        self.left_mouse_combo.setCurrentText(self.settings.value('left_mouse_action', 'Invert Time'))
+        self.left_mouse_combo.setFixedWidth(100)
+        self.left_mouse_combo.currentIndexChanged.connect(lambda: self.settings.setValue('left_mouse_action', self.left_mouse_combo.currentText()))
+        time_layout.addRow('Left Mouse:', self.left_mouse_combo)
+
+        self.middle_mouse_combo = QComboBox(self)
+        self.middle_mouse_combo.addItems(['Start Timer', 'Invert Time', 'Do Nothing'])
+        self.middle_mouse_combo.setCurrentText(self.settings.value('middle_mouse_action', 'Do Nothing'))
+        self.middle_mouse_combo.setFixedWidth(100)
+        self.middle_mouse_combo.currentIndexChanged.connect(lambda: self.settings.setValue('middle_mouse_action', self.middle_mouse_combo.currentText()))
+        time_layout.addRow('Middle Mouse:', self.middle_mouse_combo)
+
+        self.right_mouse_combo = QComboBox(self)
+        self.right_mouse_combo.addItems(['Start Timer', 'Invert Time', 'Do Nothing'])
+        self.right_mouse_combo.setCurrentText(self.settings.value('right_mouse_action', 'Start Timer'))
+        self.right_mouse_combo.setFixedWidth(100)
+        self.right_mouse_combo.currentIndexChanged.connect(lambda: self.settings.setValue('right_mouse_action', self.right_mouse_combo.currentText()))
+        time_layout.addRow('Right Mouse:', self.right_mouse_combo)
 
         time_widget = QWidget() # spacing again
         time_widget.setLayout(time_layout)
@@ -208,6 +232,10 @@ class SettingsWindow(QDialog):
         self.settings.setValue('keep_active_default', "False")
         self.settings.setValue("timeout", "10")
         self.settings.setValue('almightyDing', "True")
+        self.settings.setValue('left_mouse_action', 'Invert Time')
+        self.settings.setValue('middle_mouse_action', 'Do Nothing')
+        self.settings.setValue('right_mouse_action', 'Start Timer')
+        self.settings.setValue("skip_all_updates", False) # Reset the skip all updates setting
         self.temp1_input.setText('350')
         self.temp2_input.setText('375')
         self.temp3_input.setText('400')
@@ -218,6 +246,12 @@ class SettingsWindow(QDialog):
         self.notification_timeout.setText("10")
         self.notifications_checkbox.setChecked(True)
         self.keep_active_default_slider.setChecked(False)
+        self.skip_all_updates_checkbox.setChecked(False)
+        self.almighty_ding_checkbox.setChecked(True)
+        self.error_msg.hide()
+        self.left_mouse_combo.setCurrentText('Invert Time')
+        self.middle_mouse_combo.setCurrentText('Do Nothing')
+        self.right_mouse_combo.setCurrentText('Start Timer')
         # You got 'em
 
     def save_settings(self):
@@ -266,7 +300,6 @@ class SettingsWindow(QDialog):
             self.settings.setValue('timeout', self.notification_timeout.text())
         self.settings.setValue("almightyDing", dingChecked) # Save the almighty ding status
         self.settings.setValue("notifications", notifchecked) # Save the notification settin
-        #self.settings.setValue('notifications', notifchecked)
         self.settings.setValue("temp_type", unit)
         self.settings.setValue('keep_active_default', keepActive)
         self.accept() # Save them settings!

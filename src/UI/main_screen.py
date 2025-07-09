@@ -174,13 +174,24 @@ class TimerApp(QMainWindow):
             self.reset_timer()
         else:
             self.start_timer()
+            
+    def handle_mouse_click(self, mouse_button):
+        action = self.settings.value(mouse_button, "Start Timer")
+        if action == "Start Timer":
+            self.start_timer()
+        elif action == "Invert Time":
+            self.settings.setValue("inverted_time", "True" if self.settings.value("inverted_time", "False") == "False" else "False")
+            self.handle_timer_label()
+        elif action == "Do Nothing":
+            pass
 
     def handle_timer_click(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            self.start_timer()
+            self.handle_mouse_click("left_mouse_action")
         elif event.button() == Qt.MouseButton.RightButton:
-            self.settings.setValue("inverted_time", "True" if self.settings.value("inverted_time", "False") == "False" else "False")
-            self.handle_timer_label()
+            self.handle_mouse_click("right_mouse_action")
+        elif event.button() == Qt.MouseButton.MiddleButton:
+            self.handle_mouse_click("middle_mouse_action")
 
     def start_timer(self):
         """
