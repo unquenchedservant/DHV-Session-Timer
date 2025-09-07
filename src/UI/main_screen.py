@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt, QSettings
 from PyQt6.QtGui import QKeySequence, QShortcut
 from pygame import mixer
+import os
 from utilities import resource_path, get_ding_resource
 import concurrent.futures
 from sys import platform
@@ -54,7 +55,13 @@ class TimerApp(QMainWindow):
         self.started = False
         self.is_complete = False  # Used to check if the session is complete, helps with the start button efficiency
         self.initVariables()
+        self.write_txt_file("00:00")
         self.initUI()
+
+    def write_txt_file(self, timer_text):
+        timer_file = os.path.expanduser("~/dhv_timer.txt")
+        with open(timer_file, "w") as f:
+            f.write(timer_text)
 
     def initVariables(self):
         self.temp1 = self.settings.value("temp1", "350")
@@ -134,6 +141,14 @@ class TimerApp(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_timer)
 
+        self.click_timer = QTimer(self)
+        self.click_timer.timeout.connect(self.check_waybar_click)
+        self.click_timer.start(10)
+
+        self.invert_timer = QTimer(self)
+        self.invert_timer.timeout.connect(self.check_waybar_inverse)
+        self.invert_timer.start(10)
+
         self.elapsed_time = 0
 
         # Spacebar to start/stop the timer
@@ -147,6 +162,21 @@ class TimerApp(QMainWindow):
         :return: None
         """
         self.settings.setValue("geometry", self.saveGeometry())
+
+    def check_waybar_click(self):
+        click_file = os.path.expanduser("~/dhv_timer_click1")
+        if os.path.exists(click_file):
+            if self.started:
+                self.reset_timer()
+            else:
+                self.start_timer()
+            os.remove(click_file)
+    
+    def check_waybar_inverse(self):
+        click_file = os.path.expanduser("~/dhv_timer_click2")
+        if os.path.exists(click_file):
+            self.settings.setValue("inverted_time", "True" if self.settings.value("inverted_time", "False") == "False" else "False")
+            os.remove(click_file)
 
     def handleWindow(self):
         """
@@ -268,13 +298,14 @@ class TimerApp(QMainWindow):
         if self.settings.value("inverted_time", "False") == "False":
             minutes = self.elapsed_time // 60
             seconds = self.elapsed_time % 60
-            self.timer_label.setText(f"{minutes}:{seconds:02}")
+            timer_text = f"{minutes}:{seconds:02}"
         else:
             remaining = (self.time4 * DEBUG_TIME) - self.elapsed_time
             minutes = remaining // 60
             seconds = remaining % 60
-            self.timer_label.setText(f"-{minutes}:{seconds:02}")
-
+            timer_text = f"-{minutes}:{seconds:02}"
+        self.timer_label.setText(timer_text)
+        self.write_txt_file(timer_text)
 
     def stop_timer(self, finished=False):
         self.timer.stop()
@@ -282,6 +313,7 @@ class TimerApp(QMainWindow):
         self.start_button.setText("Start")
         self.settings_button.setEnabled(True)
         self.is_complete = finished
+        self.write_txt_file("00:00")
         if finished:
             self.timer_label.setText("Done!")
             self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
