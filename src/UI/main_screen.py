@@ -21,6 +21,7 @@ import concurrent.futures
 from sys import platform
 from .settings_screen import SettingsWindow
 from plyer import notification
+import json
 
 
 DEBUG_TIME = 60 # Prod - 60
@@ -55,13 +56,18 @@ class TimerApp(QMainWindow):
         self.started = False
         self.is_complete = False  # Used to check if the session is complete, helps with the start button efficiency
         self.initVariables()
-        self.write_txt_file("00:00")
+        self.write_txt_file("0:00", "4")
         self.initUI()
 
-    def write_txt_file(self, timer_text):
+    def write_txt_file(self, timer_text, stage="1"):
         timer_file = os.path.expanduser("~/dhv_timer.txt")
+        color_class = {"1":"green", "2":"yellow", "3": "red", "4": "white"}
+        data = {
+            "text": timer_text,
+            "class": color_class.get(stage, "green")
+        }
         with open(timer_file, "w") as f:
-            f.write(timer_text)
+            f.write(json.dumps(data))
 
     def initVariables(self):
         self.temp1 = self.settings.value("temp1", "350")
@@ -304,8 +310,16 @@ class TimerApp(QMainWindow):
             minutes = remaining // 60
             seconds = remaining % 60
             timer_text = f"-{minutes}:{seconds:02}"
+        if self.elapsed_time < self.time2 * DEBUG_TIME:
+            stage = "1"
+        elif self.elapsed_time < self.time3 * DEBUG_TIME:
+            stage = "2"
+        elif self.elapsed_time < self.time4 * DEBUG_TIME:
+            stage = "3"
+        else:
+            stage = "4"
         self.timer_label.setText(timer_text)
-        self.write_txt_file(timer_text)
+        self.write_txt_file(timer_text, stage)
 
     def stop_timer(self, finished=False):
         self.timer.stop()
@@ -313,7 +327,7 @@ class TimerApp(QMainWindow):
         self.start_button.setText("Start")
         self.settings_button.setEnabled(True)
         self.is_complete = finished
-        self.write_txt_file("00:00")
+        self.write_txt_file("0:00", "4")
         if finished:
             self.timer_label.setText("Done!")
             self.timer_label.setStyleSheet("font-size: 38px; color: #9cb9d3; font-weight: bold;")
