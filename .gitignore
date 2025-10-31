@@ -1,14 +1,1 @@
-__pycache__/main.cpython-313.pyc
-build/
-*.pyc
-venv/
-test.py
-.DS_Store
-dist/DHVSessionTimer.app/
-src/dist/DHVSessionTimer.app/
-src/dist/dmg/
-dist/dmg/
-
-copilot.py
-
-CLAUDE.md
+/target
