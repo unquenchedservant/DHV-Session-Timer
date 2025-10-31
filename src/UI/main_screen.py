@@ -292,7 +292,7 @@ class TimerApp(QMainWindow):
 
     def handle_notification(self, title, message):
         notif_on = True if self.settings.value('notifications', "True") == "True" else False
-        timeout = int(self.settings.value("timeout", "10")) if not platform == "darwin" else 0
+        timeout = int(self.settings.value("timeout", "10000")) if not platform == "darwin" else 0
         if notif_on:
             notification.notify(title=f"{title}", message=f"{message}", timeout=timeout, app_name="DHVSessionTimer")
 

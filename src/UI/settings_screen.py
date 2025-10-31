@@ -105,7 +105,7 @@ class SettingsWindow(QDialog):
         if not platform == "darwin":
             self.notification_timeout = QLineEdit(self)
             self.notification_timeout.setValidator(onlyInt)
-            self.notification_timeout.setText(self.settings.value('timeout', '10'))
+            self.notification_timeout.setText(self.settings.value('timeout', '10000'))
             self.notification_timeout.setFixedWidth(40)
             time_layout.addRow('Notif. Timeout:', self.notification_timeout)
 
@@ -230,7 +230,7 @@ class SettingsWindow(QDialog):
         self.settings.setValue('time4', '10')
         self.settings.setValue("notifications", "True")
         self.settings.setValue('keep_active_default', "False")
-        self.settings.setValue("timeout", "10")
+        self.settings.setValue("timeout", "10000")
         self.settings.setValue('almightyDing', "True")
         self.settings.setValue('left_mouse_action', 'Invert Time')
         self.settings.setValue('middle_mouse_action', 'Do Nothing')
@@ -243,7 +243,7 @@ class SettingsWindow(QDialog):
         self.time3_input.setCurrentText('8')
         self.time4_input.setCurrentText('10')
         self.temp_unit.setCurrentText('F')
-        self.notification_timeout.setText("10")
+        self.notification_timeout.setText("10000")
         self.notifications_checkbox.setChecked(True)
         self.keep_active_default_slider.setChecked(False)
         self.skip_all_updates_checkbox.setChecked(False)
